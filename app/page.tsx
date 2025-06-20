@@ -351,7 +351,7 @@ export default function BabyfootApp() {
           {/* Onglet Nouveau match */}
           <TabsContent value="match">
             <Card className="shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-red-500 to-blue-500 text-white rounded-t-lg">
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
                   Enregistrer un match
@@ -361,7 +361,7 @@ export default function BabyfootApp() {
                 <div className="grid grid-cols-3 gap-8 items-center">
                   {/* Équipe A - Gauche */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-green-600 flex items-center justify-center gap-2">
+                    <h3 className="text-lg font-semibold text-red-600 flex items-center justify-center gap-2">
                       <Users className="h-5 w-5" />
                       Équipe A
                     </h3>
@@ -369,7 +369,7 @@ export default function BabyfootApp() {
                       <SimplePlayerSelect
                         position="teamA1"
                         label="Joueur 1"
-                        teamColor="text-green-600"
+                        teamColor="text-red-600"
                         players={players}
                         selectedPlayer={selectedPlayers.teamA1}
                         newPlayerName={newPlayerNames.teamA1}
@@ -383,7 +383,7 @@ export default function BabyfootApp() {
                       <SimplePlayerSelect
                         position="teamA2"
                         label="Joueur 2"
-                        teamColor="text-green-600"
+                        teamColor="text-red-600"
                         players={players}
                         selectedPlayer={selectedPlayers.teamA2}
                         newPlayerName={newPlayerNames.teamA2}
@@ -404,11 +404,11 @@ export default function BabyfootApp() {
                       <div className="flex items-center justify-center gap-4">
                         {/* Score Équipe A */}
                         <div className="text-center">
-                          <Label className="text-sm font-medium text-green-600 mb-2 block">Équipe A</Label>
+                          <Label className="text-sm font-medium text-red-600 mb-2 block">Équipe A</Label>
                           <select
                             value={scores.teamA}
                             onChange={(e) => setScores((prev) => ({ ...prev, teamA: e.target.value }))}
-                            className="w-16 h-16 text-2xl font-bold text-center border-2 border-green-300 rounded-lg bg-white hover:border-green-400 focus:border-green-500 focus:outline-none"
+                            className="w-16 h-16 text-2xl font-bold text-center border-2 border-red-300 rounded-lg bg-white hover:border-red-400 focus:border-red-500 focus:outline-none"
                           >
                             <option value="">-</option>
                             {Array.from({ length: 11 }, (_, i) => (
@@ -495,7 +495,7 @@ export default function BabyfootApp() {
                     onClick={validateMatch}
                     disabled={submitting}
                     size="lg"
-                    className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-3"
+                    className="bg-gradient-to-r from-red-500 to-blue-500 hover:from-red-600 hover:to-blue-600 text-white px-8 py-3"
                   >
                     {submitting ? (
                       <>
