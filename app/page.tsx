@@ -62,6 +62,36 @@ export default function BabyfootApp() {
   const [individualStats, setIndividualStats] = useState<any[]>([])
   const [duoStats, setDuoStats] = useState<any[]>([])
 
+  const individualStatsWithWeightedScore = individualStats.map((stat) => {
+  const winRate = stat.matches > 0 ? stat.wins / stat.matches : 0
+  const weight = 1 - Math.exp(-stat.matches / 10)
+  const weightedScore = winRate * weight
+  return {
+    ...stat,
+    winRate,
+    weightedScore,
+  }
+})
+
+const qualifiedPlayers = individualStatsWithWeightedScore.filter((stat) => stat.matches >= 10)
+const unqualifiedPlayers = individualStatsWithWeightedScore.filter((stat) => stat.matches < 10)
+
+const duoStatsWithWeightedScore = duoStats.map((stat) => {
+  const winRate = stat.matches > 0 ? stat.wins / stat.matches : 0
+  const weight = 1 - Math.exp(-stat.matches / 10)
+  const weightedScore = winRate * weight
+  return {
+    ...stat,
+    winRate,
+    weightedScore,
+  }
+})
+
+const qualifiedDuos = duoStatsWithWeightedScore.filter((stat) => stat.matches >= 10)
+const unqualifiedDuos = duoStatsWithWeightedScore.filter((stat) => stat.matches < 10)
+
+
+
   // États pour les modals d'administration
   const [deletePlayerModal, setDeletePlayerModal] = useState<{ isOpen: boolean; player: Player | null }>({
     isOpen: false,
@@ -537,7 +567,7 @@ export default function BabyfootApp() {
                     <Tabs defaultValue="score" className="w-full">
                       <TabsList className="mb-4">
                         <TabsTrigger value="score">Nombre de victoires</TabsTrigger>
-                        <TabsTrigger value="ratio">Ratio V/D</TabsTrigger>
+                        <TabsTrigger value="ratio">Score pondéré (ELO)</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="score">
@@ -574,47 +604,83 @@ export default function BabyfootApp() {
                       </TabsContent>
 
                       <TabsContent value="ratio">
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse">
-                            <thead>
-                              <tr className="border-b-2 border-gray-200">
-                                <th className="text-left p-3 font-semibold">Rang</th>
-                                <th className="text-left p-3 font-semibold">Joueur</th>
-                                <th className="text-center p-3 font-semibold">Matchs</th>
-                                <th className="text-center p-3 font-semibold">Victoires</th>
-                                <th className="text-center p-3 font-semibold">Défaites</th>
-                                <th className="text-center p-3 font-semibold">Ratio V/D</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {individualStats
-                                .sort((a, b) => b.ratio - a.ratio)
-                                .map((stat, index) => (
-                                  <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="p-3">
-                                      <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
-                                    </td>
-                                    <td className="p-3 font-medium">{stat.name}</td>
-                                    <td className="p-3 text-center">{stat.matches}</td>
-                                    <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
-                                    <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
-                                    <td className="p-3 text-center font-bold text-purple-600">
-                                      {stat.ratio.toFixed(2)}
-                                    </td>
-                                  </tr>
-                                ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  </TabsContent>
+  <p className="text-sm text-gray-500 italic mb-4">
+    Ce classement est basé sur le score pondéré des joueurs ayant disputé au moins 10 matchs.
+  </p>
+
+  <div className="overflow-x-auto mb-8">
+    <table className="w-full border-collapse">
+      <thead>
+        <tr className="border-b-2 border-gray-200">
+          <th className="text-left p-3 font-semibold">Rang</th>
+          <th className="text-left p-3 font-semibold">Joueur</th>
+          <th className="text-center p-3 font-semibold">Matchs</th>
+          <th className="text-center p-3 font-semibold">Victoires</th>
+          <th className="text-center p-3 font-semibold">Défaites</th>
+          <th className="text-center p-3 font-semibold">Score pondéré</th>
+        </tr>
+      </thead>
+      <tbody>
+        {qualifiedPlayers
+          .sort((a, b) => b.weightedScore - a.weightedScore)
+          .map((stat, index) => (
+            <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
+              <td className="p-3">
+                <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
+              </td>
+              <td className="p-3 font-medium">{stat.name}</td>
+              <td className="p-3 text-center">{stat.matches}</td>
+              <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
+              <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+              <td className="p-3 text-center font-bold text-purple-600">
+                {(stat.weightedScore * 100).toFixed(1)}%
+              </td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  </div>
+
+  {unqualifiedPlayers.length > 0 && (
+    <>
+      <h4 className="text-md font-semibold text-gray-600 mb-2">Joueurs en attente de classement</h4>
+      <p className="text-sm text-gray-500 italic mb-4">
+        Ces joueurs ont disputé moins de 10 matchs et ne sont pas inclus dans le classement principal.
+      </p>
+
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b-2 border-gray-200">
+              <th className="text-left p-3 font-semibold">Joueur</th>
+              <th className="text-center p-3 font-semibold">Matchs</th>
+              <th className="text-center p-3 font-semibold">Victoires</th>
+              <th className="text-center p-3 font-semibold">Défaites</th>
+              <th className="text-center p-3 font-semibold">% Victoires</th>
+            </tr>
+          </thead>
+          <tbody>
+            {unqualifiedPlayers.map((stat) => (
+              <tr key={stat.name} className="border-b border-gray-100 text-gray-400 italic">
+                <td className="p-3">{stat.name}</td>
+                <td className="p-3 text-center">{stat.matches}</td>
+                <td className="p-3 text-center">{stat.wins}</td>
+                <td className="p-3 text-center">{stat.losses}</td>
+                <td className="p-3 text-center">{(stat.winRate * 100).toFixed(1)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+</TabsContent>
 
                   <TabsContent value="duo">
                     <Tabs defaultValue="score" className="w-full">
                       <TabsList className="mb-4">
                         <TabsTrigger value="score">Nombre de victoires</TabsTrigger>
-                        <TabsTrigger value="ratio">Ratio V/D</TabsTrigger>
+                        <TabsTrigger value="ratio">Score pondéré (ELO)</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="score">
@@ -655,51 +721,82 @@ export default function BabyfootApp() {
                         </div>
                       </TabsContent>
 
-                      <TabsContent value="ratio">
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse">
-                            <thead>
-                              <tr className="border-b-2 border-gray-200">
-                                <th className="text-left p-3 font-semibold">Rang</th>
-                                <th className="text-left p-3 font-semibold">Duo</th>
-                                <th className="text-center p-3 font-semibold">Matchs</th>
-                                <th className="text-center p-3 font-semibold">Victoires</th>
-                                <th className="text-center p-3 font-semibold">Défaites</th>
-                                <th className="text-center p-3 font-semibold">Ratio V/D</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {duoStats
-                                .sort((a, b) => b.ratio - a.ratio)
-                                .map((stat, index) => (
-                                  <tr
-                                    key={stat.players.join("-")}
-                                    className="border-b border-gray-100 hover:bg-gray-50"
-                                  >
-                                    <td className="p-3">
-                                      <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
-                                    </td>
-                                    <td className="p-3 font-medium">
-                                      {stat.players[0]} & {stat.players[1]}
-                                    </td>
-                                    <td className="p-3 text-center">{stat.matches}</td>
-                                    <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
-                                    <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
-                                    <td className="p-3 text-center font-bold text-purple-600">
-                                      {stat.ratio.toFixed(2)}
-                                    </td>
-                                  </tr>
-                                ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                     <TabsContent value="ratio">
+  <p className="text-sm text-gray-500 italic mb-4">
+    Ce classement est basé sur le score pondéré des duos ayant disputé au moins 10 matchs.
+  </p>
+
+  <div className="overflow-x-auto mb-8">
+    <table className="w-full border-collapse">
+      <thead>
+        <tr className="border-b-2 border-gray-200">
+          <th className="text-left p-3 font-semibold">Rang</th>
+          <th className="text-left p-3 font-semibold">Duo</th>
+          <th className="text-center p-3 font-semibold">Matchs</th>
+          <th className="text-center p-3 font-semibold">Victoires</th>
+          <th className="text-center p-3 font-semibold">Défaites</th>
+          <th className="text-center p-3 font-semibold">Score pondéré</th>
+        </tr>
+      </thead>
+      <tbody>
+        {qualifiedDuos
+          .sort((a, b) => b.weightedScore - a.weightedScore)
+          .map((stat, index) => (
+            <tr key={stat.players.join("-")} className="border-b border-gray-100 hover:bg-gray-50">
+              <td className="p-3">
+                <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
+              </td>
+              <td className="p-3 font-medium">
+                {stat.players[0]} & {stat.players[1]}
+              </td>
+              <td className="p-3 text-center">{stat.matches}</td>
+              <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
+              <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+              <td className="p-3 text-center font-bold text-purple-600">
+                {(stat.weightedScore * 100).toFixed(1)}%
+              </td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  </div>
+
+  {unqualifiedDuos.length > 0 && (
+    <>
+      <h4 className="text-md font-semibold text-gray-600 mb-2">Duos en attente de classement</h4>
+      <p className="text-sm text-gray-500 italic mb-4">
+        Ces duos ont disputé moins de 10 matchs et ne sont pas inclus dans le classement principal.
+      </p>
+
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b-2 border-gray-200">
+              <th className="text-left p-3 font-semibold">Duo</th>
+              <th className="text-center p-3 font-semibold">Matchs</th>
+              <th className="text-center p-3 font-semibold">Victoires</th>
+              <th className="text-center p-3 font-semibold">Défaites</th>
+              <th className="text-center p-3 font-semibold">% Victoires</th>
+            </tr>
+          </thead>
+          <tbody>
+            {unqualifiedDuos.map((stat) => (
+              <tr key={stat.players.join("-")} className="border-b border-gray-100 text-gray-400 italic">
+                <td className="p-3">
+                  {stat.players[0]} & {stat.players[1]}
+                </td>
+                <td className="p-3 text-center">{stat.matches}</td>
+                <td className="p-3 text-center">{stat.wins}</td>
+                <td className="p-3 text-center">{stat.losses}</td>
+                <td className="p-3 text-center">{(stat.winRate * 100).toFixed(1)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+</TabsContent>
 
           {/* 🆕 Onglet Administration */}
           <TabsContent value="admin">
