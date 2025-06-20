@@ -769,7 +769,6 @@ export default function BabyfootApp() {
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-3 font-semibold">Date</th>
                           <th className="text-left p-3 font-semibold">Équipe A</th>
                           <th className="text-center p-3 font-semibold">Score</th>
                           <th className="text-left p-3 font-semibold">Équipe B</th>
