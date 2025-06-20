@@ -769,7 +769,6 @@ export default function BabyfootApp() {
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-3 font-semibold">Date</th>
                           <th className="text-left p-3 font-semibold">Équipe A</th>
                           <th className="text-center p-3 font-semibold">Score</th>
                           <th className="text-left p-3 font-semibold">Équipe B</th>
@@ -779,14 +778,6 @@ export default function BabyfootApp() {
                       <tbody>
                         {matches.slice(0, 20).map((match) => (
                           <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="p-3 text-gray-600">
-                              {new Date(match.created_at).toLocaleDateString("fr-FR", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </td>
                             <td className="p-3">
                               <div className="text-sm">
                                 <div className="font-medium text-green-600">
