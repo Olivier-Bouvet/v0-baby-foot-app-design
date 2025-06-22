@@ -363,7 +363,7 @@ export default function BabyfootApp() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-red-600 flex items-center justify-center gap-2">
                       <Users className="h-5 w-5" />
-                      Équipe A
+                      Équipe rouge
                     </h3>
                     <div className="space-y-4">
                       <SimplePlayerSelect
@@ -404,7 +404,7 @@ export default function BabyfootApp() {
                       <div className="flex items-center justify-center gap-4">
                         {/* Score Équipe A */}
                         <div className="text-center">
-                          <Label className="text-sm font-medium text-red-600 mb-2 block">Équipe A</Label>
+                          <Label className="text-sm font-medium text-red-600 mb-2 block">Équipe rouge</Label>
                           <select
                             value={scores.teamA}
                             onChange={(e) => setScores((prev) => ({ ...prev, teamA: e.target.value }))}
@@ -424,7 +424,7 @@ export default function BabyfootApp() {
 
                         {/* Score Équipe B */}
                         <div className="text-center">
-                          <Label className="text-sm font-medium text-blue-600 mb-2 block">Équipe B</Label>
+                          <Label className="text-sm font-medium text-blue-600 mb-2 block">Équipe bleue</Label>
                           <select
                             value={scores.teamB}
                             onChange={(e) => setScores((prev) => ({ ...prev, teamB: e.target.value }))}
@@ -455,7 +455,7 @@ export default function BabyfootApp() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-blue-600 flex items-center justify-center gap-2">
                       <Users className="h-5 w-5" />
-                      Équipe B
+                      Équipe bleue
                     </h3>
                     <div className="space-y-4">
                       <SimplePlayerSelect
@@ -769,9 +769,9 @@ export default function BabyfootApp() {
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-3 font-semibold">Équipe A</th>
+                          <th className="text-left p-3 font-semibold">Équipe rouge</th>
                           <th className="text-center p-3 font-semibold">Score</th>
-                          <th className="text-left p-3 font-semibold">Équipe B</th>
+                          <th className="text-left p-3 font-semibold">Équipe bleue</th>
                           <th className="text-center p-3 font-semibold">Actions</th>
                         </tr>
                       </thead>
@@ -780,7 +780,7 @@ export default function BabyfootApp() {
                           <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
                             <td className="p-3">
                               <div className="text-sm">
-                                <div className="font-medium text-green-600">
+                                <div className="font-medium text-red-600">
                                   {match.team_a_player_1} & {match.team_a_player_2}
                                 </div>
                               </div>
