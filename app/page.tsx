@@ -190,18 +190,12 @@ export default function BabyfootApp() {
   }
 
   const validateMatch = async () => {
-    console.log("🔍 Début de validateMatch")
-
     const teamAPlayer1 = getPlayerName("teamA1")
     const teamAPlayer2 = getPlayerName("teamA2")
     const teamBPlayer1 = getPlayerName("teamB1")
     const teamBPlayer2 = getPlayerName("teamB2")
 
-    console.log("👥 Joueurs:", { teamAPlayer1, teamAPlayer2, teamBPlayer1, teamBPlayer2 })
-    console.log("⚽ Scores:", scores)
-
     if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
-      console.log("❌ Joueurs manquants")
       toast({
         title: "Joueurs manquants",
         description: "Veuillez sélectionner tous les joueurs",
@@ -212,7 +206,6 @@ export default function BabyfootApp() {
     }
 
     if (!scores.teamA || !scores.teamB) {
-      console.log("❌ Scores manquants")
       toast({
         title: "Scores manquants",
         description: "Veuillez saisir les scores",
@@ -227,7 +220,6 @@ export default function BabyfootApp() {
     const uniquePlayers = new Set(allSelectedPlayers)
 
     if (uniquePlayers.size !== allSelectedPlayers.length) {
-      console.log("❌ Joueur en doublon détecté")
       const duplicates = allSelectedPlayers.filter((player, index) => allSelectedPlayers.indexOf(player) !== index)
       toast({
         title: "Joueur en doublon",
@@ -237,9 +229,6 @@ export default function BabyfootApp() {
       })
       return
     }
-
-    console.log("✅ Validation OK, début de l'enregistrement")
-    setSubmitting(true)
 
     try {
       // Créer les nouveaux joueurs s'ils n'existent pas
@@ -336,7 +325,7 @@ export default function BabyfootApp() {
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="match" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
-              Nouveau match
+              Matchs
             </TabsTrigger>
             <TabsTrigger value="rankings" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -349,12 +338,13 @@ export default function BabyfootApp() {
           </TabsList>
 
           {/* Onglet Nouveau match */}
-          <TabsContent value="match">
+          <TabsContent value="match" >
+          <div className="space-y-6">
             <Card className="shadow-lg">
               <CardHeader className="bg-gradient-to-r from-red-500 to-blue-500 text-white rounded-t-lg">
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  Enregistrer un match
+                  Nouveau match
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -509,7 +499,87 @@ export default function BabyfootApp() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+
+          {/* Gestion des matchs */}
+              <Card className="shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Historique des matchs ({matches.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b-2 border-gray-200">
+                          <th className="text-left p-3 font-semibold">Équipe rouge</th>
+                          <th className="text-center p-3 font-semibold">Score</th>
+                          <th className="text-left p-3 font-semibold">Équipe bleue</th>
+                          <th className="text-center p-3 font-semibold">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {matches.slice(0, 20).map((match) => (
+                          <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
+                            <td className="p-3">
+                              <div className="text-sm">
+                                <div className="font-medium text-red-600">
+                                  {match.team_a_player_1} & {match.team_a_player_2}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-3 text-center">
+                              <Badge variant={match.score_a > match.score_b ? "default" : "secondary"} className="mr-1">
+                                {match.score_a}
+                              </Badge>
+                              -
+                              <Badge variant={match.score_b > match.score_a ? "default" : "secondary"} className="ml-1">
+                                {match.score_b}
+                              </Badge>
+                            </td>
+                            <td className="p-3">
+                              <div className="text-sm">
+                                <div className="font-medium text-blue-600">
+                                  {match.team_b_player_1} & {match.team_b_player_2}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-3 text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setEditMatchModal({ isOpen: true, match })}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setDeleteMatchModal({ isOpen: true, match })}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {matches.length > 20 && (
+                    <p className="text-center text-gray-500 mt-4">
+                      Affichage des 20 matchs les plus récents sur {matches.length} au total
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+         
+            </div>
+           </TabsContent>
+       
 
           {/* Onglet Classements */}
           <TabsContent value="rankings">
@@ -756,82 +826,6 @@ export default function BabyfootApp() {
                 </CardContent>
               </Card>
 
-              {/* Gestion des matchs */}
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Historique des matchs ({matches.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-3 font-semibold">Équipe rouge</th>
-                          <th className="text-center p-3 font-semibold">Score</th>
-                          <th className="text-left p-3 font-semibold">Équipe bleue</th>
-                          <th className="text-center p-3 font-semibold">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {matches.slice(0, 20).map((match) => (
-                          <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="p-3">
-                              <div className="text-sm">
-                                <div className="font-medium text-red-600">
-                                  {match.team_a_player_1} & {match.team_a_player_2}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="p-3 text-center">
-                              <Badge variant={match.score_a > match.score_b ? "default" : "secondary"} className="mr-1">
-                                {match.score_a}
-                              </Badge>
-                              -
-                              <Badge variant={match.score_b > match.score_a ? "default" : "secondary"} className="ml-1">
-                                {match.score_b}
-                              </Badge>
-                            </td>
-                            <td className="p-3">
-                              <div className="text-sm">
-                                <div className="font-medium text-blue-600">
-                                  {match.team_b_player_1} & {match.team_b_player_2}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="p-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setEditMatchModal({ isOpen: true, match })}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setDeleteMatchModal({ isOpen: true, match })}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {matches.length > 20 && (
-                    <p className="text-center text-gray-500 mt-4">
-                      Affichage des 20 matchs les plus récents sur {matches.length} au total
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
             </div>
           </TabsContent>
         </Tabs>
