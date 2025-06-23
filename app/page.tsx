@@ -620,7 +620,7 @@ export default function BabyfootApp() {
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                                <th className="text-center p-3 font-semibold">Score cumulé</th>
+                                <th className="text-center p-3 font-semibold">Victoires cumulées</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -697,7 +697,7 @@ export default function BabyfootApp() {
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                                <th className="text-center p-3 font-semibold">Score cumulé</th>
+                                <th className="text-center p-3 font-semibold">Victoires cumulées</th>
                               </tr>
                             </thead>
                             <tbody>
