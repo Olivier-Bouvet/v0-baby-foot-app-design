@@ -656,19 +656,16 @@ export default function BabyfootApp() {
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                               <th className="text-center p-3 font-semibold">
-                                <Tooltip>
-                                  <TooltipTrigger>ELO</TooltipTrigger>
-                                  <TooltipContent>
-                                    Classement basé sur la difficulté de l'adversaire, recalculé à chaque match.
-                                  </TooltipContent>
-                                </Tooltip>
-                              </th>
+                              <th className="text-center p-3 font-semibold">ELO</th>
                               </tr>
                             </thead>
                             <tbody>
                               {individualStats
-                                .sort((a, b) => b.totalScore - a.totalScore)
+                               .sort((a, b) => {
+  const eloA = eloRatings[a.name] ?? 1000
+  const eloB = eloRatings[b.name] ?? 1000
+  return eloB - eloA
+})
                                 .map((stat, index) => (
                                   <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="p-3">
@@ -678,7 +675,6 @@ export default function BabyfootApp() {
                                     <td className="p-3 text-center">{stat.matches}</td>
                                     <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
                                     <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
-                                    <td className="p-3 text-center font-bold text-blue-600">{stat.totalScore}</td>
                                     <td className="p-3 text-center font-bold text-yellow-600">
                                     {Math.round(eloRatings[stat.name] ?? 1000)}
                                     </td>
@@ -704,7 +700,7 @@ export default function BabyfootApp() {
                             </thead>
                             <tbody>
                               {individualStats
-                                .sort((a, b) => b.ratio - a.ratio)
+                                .sort((a, b) => (eloRatings[b.name] ?? 1000) - (eloRatings[a.name] ?? 1000))
                                 .map((stat, index) => (
                                   <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="p-3">
