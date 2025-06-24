@@ -6,6 +6,12 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider
+} from "@/components/ui/tooltip"
 import { Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar } from "lucide-react"
 import {
   getPlayers,
