@@ -12,9 +12,8 @@ import {
   TooltipContent,
   TooltipProvider
 } from "@/components/ui/tooltip"
+import { Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar } from "lucide-react"
 import {
-  Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar, Info
-} from "lucide-react"import {
   getPlayers,
   getMatches,
   createPlayer,
@@ -135,8 +134,9 @@ export default function BabyfootApp() {
     const teamA = [match.team_a_player_1, match.team_a_player_2]
     const teamB = [match.team_b_player_1, match.team_b_player_2]
 
-    const teamAElo = (ratings[teamA[0]] + ratings[teamA[1]]) / 2
-    const teamBElo = (ratings[teamB[0]] + ratings[teamB[1]]) / 2
+ const teamAElo = 0.75 * Math.max(ratings[teamA[0]], ratings[teamA[1]]) + 0.25 * Math.min(ratings[teamA[0]], ratings[teamA[1]])
+const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * Math.min(ratings[teamB[0]], ratings[teamB[1]])
+
 
     const expectedA = 1 / (1 + Math.pow(10, (teamBElo - teamAElo) / 400))
     const scoreA = match.score_a > match.score_b ? 1 : 0
@@ -593,52 +593,55 @@ export default function BabyfootApp() {
                         </tr>
                       </thead>
                       <tbody>
-                        {matches.slice(0, 20).map((match) => (
-                          <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="p-3">
-                              <div className="text-sm">
-                                <div className="font-medium text-red-600">
-                                  {match.team_a_player_1} & {match.team_a_player_2}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="p-3 text-center">
-                              <Badge variant={match.score_a > match.score_b ? "default" : "secondary"} className="mr-1">
-                                {match.score_a}
-                              </Badge>
-                              -
-                              <Badge variant={match.score_b > match.score_a ? "default" : "secondary"} className="ml-1">
-                                {match.score_b}
-                              </Badge>
-                            </td>
-                            <td className="p-3">
-                              <div className="text-sm">
-                                <div className="font-medium text-blue-600">
-                                  {match.team_b_player_1} & {match.team_b_player_2}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="p-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setEditMatchModal({ isOpen: true, match })}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setDeleteMatchModal({ isOpen: true, match })}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                       {[...matches]
+  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  .slice(0, 20)
+  .map((match) => (
+    <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
+      <td className="p-3">
+        <div className="text-sm">
+          <div className="font-medium text-red-600">
+            {match.team_a_player_1} & {match.team_a_player_2}
+          </div>
+        </div>
+      </td>
+      <td className="p-3 text-center">
+        <Badge variant={match.score_a > match.score_b ? "default" : "secondary"} className="mr-1">
+          {match.score_a}
+        </Badge>
+        -
+        <Badge variant={match.score_b > match.score_a ? "default" : "secondary"} className="ml-1">
+          {match.score_b}
+        </Badge>
+      </td>
+      <td className="p-3">
+        <div className="text-sm">
+          <div className="font-medium text-blue-600">
+            {match.team_b_player_1} & {match.team_b_player_2}
+          </div>
+        </div>
+      </td>
+      <td className="p-3 text-center">
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setEditMatchModal({ isOpen: true, match })}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setDeleteMatchModal({ isOpen: true, match })}
+            className="text-red-600 hover:text-red-700"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </td>
+    </tr>
+))}
                       </tbody>
                     </table>
                   </div>
@@ -688,30 +691,7 @@ export default function BabyfootApp() {
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                              <th className="text-center p-3 font-semibold">
-  <div className="flex items-center justify-center gap-1">
-    ELO
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          <button
-            type="button"
-            className="p-0 m-0 bg-transparent border-none cursor-help text-gray-500 hover:text-gray-700"
-          >
-            <Info className="h-4 w-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-sm text-sm text-left">
-          Le score ELO reflète la performance du duo selon les victoires, défaites et le niveau de l’adversaire.
-          <br />
-          Il monte plus vite contre des équipes fortes et descend davantage en cas de défaite contre plus faibles.
-          <br />
-          <em>Classement provisoire si moins de 5 matchs.</em>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  </div>
-</th>
+                              <th className="text-center p-3 font-semibold">ELO</th>
                               </tr>
                             </thead>
                             <tbody>
