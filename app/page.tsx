@@ -38,6 +38,8 @@ export default function BabyfootApp() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [eloRatings, setEloRatings] = useState<Record<string, number>>({})
+  const [duoEloRatings, setDuoEloRatings] = useState<Record<string, number>>({})
+
 
   // État du formulaire
   const [selectedPlayers, setSelectedPlayers] = useState<{
@@ -110,6 +112,9 @@ export default function BabyfootApp() {
       setDuoStats(duoStatsData)
       const elo = computeEloRatings(matchesData, playersData)
       setEloRatings(elo)
+      const duoElo = computeDuoEloRatings(matchesData)
+      setDuoEloRatings(duoElo)
+
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error)
     } finally {
@@ -143,6 +148,36 @@ export default function BabyfootApp() {
 
   return ratings
 }
+
+  // ELO DUO
+  const computeDuoEloRatings = (matches: Match[], k = 32) => {
+  const duoRatings: Record<string, number> = {}
+
+  matches.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+
+  matches.forEach(match => {
+    const teamA = [match.team_a_player_1, match.team_a_player_2].sort()
+    const teamB = [match.team_b_player_1, match.team_b_player_2].sort()
+    const keyA = teamA.join(" & ")
+    const keyB = teamB.join(" & ")
+
+    if (!(keyA in duoRatings)) duoRatings[keyA] = 1000
+    if (!(keyB in duoRatings)) duoRatings[keyB] = 1000
+
+    const eloA = duoRatings[keyA]
+    const eloB = duoRatings[keyB]
+
+    const expectedA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400))
+    const scoreA = match.score_a > match.score_b ? 1 : 0
+    const deltaA = k * (scoreA - expectedA)
+
+    duoRatings[keyA] += deltaA
+    duoRatings[keyB] -= deltaA
+  })
+
+  return duoRatings
+}
+
 
   // Fonctions d'administration
   const handleDeletePlayer = async (playerId: string) => {
@@ -739,7 +774,7 @@ export default function BabyfootApp() {
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                                <th className="text-center p-3 font-semibold">Victoires cumulées</th>
+                                <th className="text-center p-3 font-semibold">ELO</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -759,7 +794,9 @@ export default function BabyfootApp() {
                                     <td className="p-3 text-center">{stat.matches}</td>
                                     <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
                                     <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
-                                    <td className="p-3 text-center font-bold text-blue-600">{stat.totalScore}</td>
+                                    <td className="p-3 text-center font-bold text-yellow-600">
+                                      {Math.round(duoEloRatings[stat.players.sort().join(" & ")] ?? 1000)}
+                                    </td>
                                   </tr>
                                 ))}
                             </tbody>
