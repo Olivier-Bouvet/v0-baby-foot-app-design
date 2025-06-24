@@ -695,13 +695,21 @@ export default function BabyfootApp() {
                               </tr>
                             </thead>
                             <tbody>
-                              {individualStats
-                                .sort((a, b) => {
-                                    const eloA = eloRatings[a.name] ?? 1000
-                                    const eloB = eloRatings[b.name] ?? 1000
-                                    return eloB - eloA
-                                  })
-                                .map((stat, index) => (
+                             {individualStats
+                              .sort((a, b) => {
+                                const eloA = eloRatings[a.name] ?? 1000
+                                const eloB = eloRatings[b.name] ?? 1000
+
+                                if (a.matches < 10 && b.matches >= 10) return 1
+                                if (a.matches >= 10 && b.matches < 10) return -1
+
+                                return eloB - eloA
+                              })
+                              .map((stat, index) => {
+                                const elo = eloRatings[stat.name]
+                                const isProvisoire = stat.matches < 10
+
+                                return (
                                   <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="p-3">
                                       <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
@@ -711,10 +719,16 @@ export default function BabyfootApp() {
                                     <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
                                     <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
                                     <td className="p-3 text-center font-bold text-yellow-600">
-                                    {Math.round(eloRatings[stat.name] ?? 1000)}
+                                      {isProvisoire ? (
+                                        <span className="text-gray-400 italic">Minimum 10 matchs</span>
+                                      ) : (
+                                        Math.round(elo ?? 1000)
+                                      )}
                                     </td>
                                   </tr>
-                                ))}
+                                )
+                              })}
+
                             </tbody>
                           </table>
                         </div>
