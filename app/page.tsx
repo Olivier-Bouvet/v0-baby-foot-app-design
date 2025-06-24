@@ -749,31 +749,39 @@ export default function BabyfootApp() {
                             <tbody>
                               {duoStats
                                 .sort((a, b) => {
-                                  const keyA = a.players.sort().join(" & ")
-                                  const keyB = b.players.sort().join(" & ")
+                                  const keyA = a.players.slice().sort().join(" & ")
+                                  const keyB = b.players.slice().sort().join(" & ")
                                   const eloA = duoEloRatings[keyA] ?? 1000
                                   const eloB = duoEloRatings[keyB] ?? 1000
+
+                                  if (a.matches < 5 && b.matches >= 5) return 1
+                                  if (a.matches >= 5 && b.matches < 5) return -1
+
                                   return eloB - eloA
                                 })
-                                .map((stat, index) => (
-                                  <tr
-                                    key={stat.players.join("-")}
-                                    className="border-b border-gray-100 hover:bg-gray-50"
-                                  >
-                                    <td className="p-3">
-                                      <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
-                                    </td>
-                                    <td className="p-3 font-medium">
-                                      {stat.players[0]} & {stat.players[1]}
-                                    </td>
-                                    <td className="p-3 text-center">{stat.matches}</td>
-                                    <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
-                                    <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
-                                    <td className="p-3 text-center font-bold text-yellow-600">
-                                      {Math.round(duoEloRatings[stat.players.sort().join(" & ")] ?? 1000)}
-                                    </td>
-                                  </tr>
-                                ))}
+                                .map((stat, index) => {
+                                  const key = stat.players.slice().sort().join(" & ")
+                                  const elo = duoEloRatings[key] ?? 1000
+                                  const isProvisoire = stat.matches < 5
+
+                                  return (
+                                    <tr key={key} className="border-b border-gray-100 hover:bg-gray-50">
+                                      <td className="p-3">
+                                        <Badge variant={index < 3 && !isProvisoire ? "default" : "secondary"}>#{index + 1}</Badge>
+                                      </td>
+                                      <td className="p-3 font-medium">{stat.players[0]} & {stat.players[1]}</td>
+                                      <td className="p-3 text-center">{stat.matches}</td>
+                                      <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
+                                      <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+                                      <td className="p-3 text-center font-bold text-yellow-600">
+                                        {isProvisoire
+                                          ? <span className="text-gray-400 italic">Minimum 5 matchs</span>
+                                          : Math.round(elo)
+                                        }
+                                      </td>
+                                    </tr>
+                                  )
+                                })}
                             </tbody>
                           </table>
                         </div>
