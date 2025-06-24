@@ -12,7 +12,7 @@ import {
   TooltipContent,
   TooltipProvider
 } from "@/components/ui/tooltip"
-import { Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar, Info } from "lucide-react"
+import { Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar } from "lucide-react"
 import {
   getPlayers,
   getMatches,
@@ -691,24 +691,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                              <th className="text-center p-3 font-semibold">
-  <div className="flex items-center justify-center gap-1">
-    ELO
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Info className="h-4 w-4 text-gray-500 cursor-pointer" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-xs text-sm">
-          <p>
-            Le score ELO reflète la performance d’un joueur. Gagner contre un joueur mieux classé rapporte plus de points, tandis que perdre contre un joueur moins bien classé en fait perdre davantage.
-            Le score est ajusté à chaque match selon l’écart de niveau.
-          </p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  </div>
-</th>
+                              <th className="text-center p-3 font-semibold">ELO</th>
                               </tr>
                             </thead>
                             <tbody>
