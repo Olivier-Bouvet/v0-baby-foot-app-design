@@ -779,7 +779,13 @@ export default function BabyfootApp() {
                             </thead>
                             <tbody>
                               {duoStats
-                                .sort((a, b) => b.totalScore - a.totalScore)
+                                .sort((a, b) => {
+                                  const keyA = a.players.sort().join(" & ")
+                                  const keyB = b.players.sort().join(" & ")
+                                  const eloA = duoEloRatings[keyA] ?? 1000
+                                  const eloB = duoEloRatings[keyB] ?? 1000
+                                  return eloB - eloA
+                                })
                                 .map((stat, index) => (
                                   <tr
                                     key={stat.players.join("-")}
