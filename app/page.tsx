@@ -675,6 +675,13 @@ export default function BabyfootApp() {
                   </TabsList>
 
                   <TabsContent value="individual">
+                    <Tabs defaultValue="score" className="w-full">
+                      <TabsList className="mb-4">
+                        <TabsTrigger value="score">Nombre de victoires</TabsTrigger>
+                        <TabsTrigger value="ratio">Ratio V/D</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="score">
                         <div className="overflow-x-auto">
                           <table className="w-full border-collapse">
                             <thead>
@@ -725,9 +732,53 @@ export default function BabyfootApp() {
                             </tbody>
                           </table>
                         </div>
+                      </TabsContent>
+
+                      <TabsContent value="ratio">
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse">
+                            <thead>
+                              <tr className="border-b-2 border-gray-200">
+                                <th className="text-left p-3 font-semibold">Rang</th>
+                                <th className="text-left p-3 font-semibold">Joueur</th>
+                                <th className="text-center p-3 font-semibold">Matchs</th>
+                                <th className="text-center p-3 font-semibold">Victoires</th>
+                                <th className="text-center p-3 font-semibold">Défaites</th>
+                                <th className="text-center p-3 font-semibold">Ratio V/D</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {individualStats
+                                .sort((a, b) => (eloRatings[b.name] ?? 1000) - (eloRatings[a.name] ?? 1000))
+                                .map((stat, index) => (
+                                  <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="p-3">
+                                      <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
+                                    </td>
+                                    <td className="p-3 font-medium">{stat.name}</td>
+                                    <td className="p-3 text-center">{stat.matches}</td>
+                                    <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
+                                    <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+                                    <td className="p-3 text-center font-bold text-purple-600">
+                                      {stat.ratio.toFixed(2)}
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </TabsContent>
 
                   <TabsContent value="duo">
+                    <Tabs defaultValue="score" className="w-full">
+                      <TabsList className="mb-4">
+                        <TabsTrigger value="score">Nombre de victoires</TabsTrigger>
+                        <TabsTrigger value="ratio">Ratio V/D</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="score">
                         <div className="overflow-x-auto">
                           <table className="w-full border-collapse">
                             <thead>
@@ -741,36 +792,77 @@ export default function BabyfootApp() {
                               </tr>
                             </thead>
                             <tbody>
-                          {duoStats
-                            .filter((stat) => stat.matches >= 5)
-                            .sort((a, b) => {
-                              const keyA = [...a.players].sort().join(" & ")
-                              const keyB = [...b.players].sort().join(" & ")
-                              const eloA = duoEloRatings[keyA] ?? 1000
-                              const eloB = duoEloRatings[keyB] ?? 1000
-                              return eloB - eloA
-                            })
-                            .map((stat, index) => {
-                              const duoKey = [...stat.players].sort().join(" & ")
-                              const elo = duoEloRatings[duoKey]
-                              return (
-                                <tr key={duoKey} className="border-b border-gray-100 hover:bg-gray-50">
-                                  <td className="p-3">
-                                    <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
-                                  </td>
-                                  <td className="p-3 font-medium">{duoKey}</td>
-                                  <td className="p-3 text-center">{stat.matches}</td>
-                                  <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
-                                  <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
-                                  <td className="p-3 text-center font-bold text-yellow-600">
-                                    {Math.round(elo ?? 1000)}
-                                  </td>
-                                </tr>
-                              )
-                            })}
+                              {duoStats
+                                .sort((a, b) => {
+                                  const keyA = a.players.sort().join(" & ")
+                                  const keyB = b.players.sort().join(" & ")
+                                  const eloA = duoEloRatings[keyA] ?? 1000
+                                  const eloB = duoEloRatings[keyB] ?? 1000
+                                  return eloB - eloA
+                                })
+                                .map((stat, index) => (
+                                  <tr
+                                    key={stat.players.join("-")}
+                                    className="border-b border-gray-100 hover:bg-gray-50"
+                                  >
+                                    <td className="p-3">
+                                      <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
+                                    </td>
+                                    <td className="p-3 font-medium">
+                                      {stat.players[0]} & {stat.players[1]}
+                                    </td>
+                                    <td className="p-3 text-center">{stat.matches}</td>
+                                    <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
+                                    <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+                                    <td className="p-3 text-center font-bold text-yellow-600">
+                                      {Math.round(duoEloRatings[stat.players.sort().join(" & ")] ?? 1000)}
+                                    </td>
+                                  </tr>
+                                ))}
                             </tbody>
                           </table>
                         </div>
+                      </TabsContent>
+
+                      <TabsContent value="ratio">
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse">
+                            <thead>
+                              <tr className="border-b-2 border-gray-200">
+                                <th className="text-left p-3 font-semibold">Rang</th>
+                                <th className="text-left p-3 font-semibold">Duo</th>
+                                <th className="text-center p-3 font-semibold">Matchs</th>
+                                <th className="text-center p-3 font-semibold">Victoires</th>
+                                <th className="text-center p-3 font-semibold">Défaites</th>
+                                <th className="text-center p-3 font-semibold">Ratio V/D</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {duoStats
+                                .sort((a, b) => b.ratio - a.ratio)
+                                .map((stat, index) => (
+                                  <tr
+                                    key={stat.players.join("-")}
+                                    className="border-b border-gray-100 hover:bg-gray-50"
+                                  >
+                                    <td className="p-3">
+                                      <Badge variant={index < 3 ? "default" : "secondary"}>#{index + 1}</Badge>
+                                    </td>
+                                    <td className="p-3 font-medium">
+                                      {stat.players[0]} & {stat.players[1]}
+                                    </td>
+                                    <td className="p-3 text-center">{stat.matches}</td>
+                                    <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
+                                    <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+                                    <td className="p-3 text-center font-bold text-purple-600">
+                                      {stat.ratio.toFixed(2)}
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </TabsContent>
                     </Tabs>
                   </TabsContent>
                 </Tabs>
