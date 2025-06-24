@@ -12,8 +12,9 @@ import {
   TooltipContent,
   TooltipProvider
 } from "@/components/ui/tooltip"
-import { Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar } from "lucide-react"
 import {
+  Trophy, Users, User, TrendingUp, Target, Loader2, Settings, Edit, Trash2, Calendar, Info
+} from "lucide-react"import {
   getPlayers,
   getMatches,
   createPlayer,
