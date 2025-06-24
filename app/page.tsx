@@ -32,6 +32,7 @@ import { SimplePlayerSelect } from "@/components/simple-player-select"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 
+
 export default function BabyfootApp() {
   const [players, setPlayers] = useState<Player[]>([])
   const [matches, setMatches] = useState<Match[]>([])
@@ -686,7 +687,30 @@ export default function BabyfootApp() {
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
-                              <th className="text-center p-3 font-semibold">ELO</th>
+                              <th className="text-center p-3 font-semibold">
+  <div className="flex items-center justify-center gap-1">
+    ELO
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <button
+            type="button"
+            className="p-0 m-0 bg-transparent border-none cursor-help text-gray-500 hover:text-gray-700"
+          >
+            <Info className="h-4 w-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-sm text-sm text-left">
+          Le score ELO reflète la performance du duo selon les victoires, défaites et le niveau de l’adversaire.
+          <br />
+          Il monte plus vite contre des équipes fortes et descend davantage en cas de défaite contre plus faibles.
+          <br />
+          <em>Classement provisoire si moins de 5 matchs.</em>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  </div>
+</th>
                               </tr>
                             </thead>
                             <tbody>
