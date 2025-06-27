@@ -40,6 +40,11 @@ export default function BabyfootApp() {
   const [submitting, setSubmitting] = useState(false)
   const [eloRatings, setEloRatings] = useState<Record<string, number>>({})
   const [duoEloRatings, setDuoEloRatings] = useState<Record<string, number>>({})
+  const [colorWinStats, setColorWinStats] = useState<{ redWins: number; blueWins: number; total: number }>({
+  redWins: 0,
+  blueWins: 0,
+  total: 0,
+})
 
 
   // État du formulaire
@@ -115,6 +120,11 @@ export default function BabyfootApp() {
       setEloRatings(elo)
       const duoElo = computeDuoEloRatings(matchesData)
       setDuoEloRatings(duoElo)
+      const redWins = matchesData.filter(m => m.score_a > m.score_b).length
+      const blueWins = matchesData.filter(m => m.score_b > m.score_a).length
+      const total = redWins + blueWins
+
+setColorWinStats({ redWins, blueWins, total })
 
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error)
@@ -655,6 +665,15 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
          
             </div>
            </TabsContent>
+                       <div className="mb-6 text-center">
+            <p className="text-sm text-gray-700">
+              🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :
+            </p>
+            <p className="text-md font-semibold">
+              🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp;
+              🔵 Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
+            </p>
+          </div>
        
 
           {/* Onglet Classements */}
