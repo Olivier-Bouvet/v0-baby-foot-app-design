@@ -398,7 +398,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
         <div className="text-center py-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Trophy className="h-8 w-8 text-yellow-500" />
-            <h1 className="text-4xl font-bold text-gray-900">Baby-foot Tracker</h1>
+            <h1 className="text-4xl font-bold text-gray-900">MyLegiFoot Tracker</h1>
           </div>
           <p className="text-gray-600">Enregistrez vos matchs et suivez vos performances</p>
         </div>
@@ -662,10 +662,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
                   )}
                 </CardContent>
               </Card>
-         
-            </div>
-           </TabsContent>
-                       <div className="mb-6 text-center">
+                     <div className="mb-6 text-center">
             <p className="text-sm text-gray-700">
               🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :
             </p>
@@ -674,6 +671,9 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
               🔵 Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
             </p>
           </div>
+            </div>
+           </TabsContent>
+
        
 
           {/* Onglet Classements */}
@@ -710,6 +710,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
+                                <th className="text-center p-3 font-semibold">Taux de victoire</th>
                               <th className="text-center p-3 font-semibold">ELO</th>
                               </tr>
                             </thead>
@@ -737,6 +738,9 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
                                     <td className="p-3 text-center">{stat.matches}</td>
                                     <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
                                     <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+                                    <td className="p-3 text-center text-indigo-600 font-semibold">
+  {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
+</td>
                                     <td className="p-3 text-center font-bold text-yellow-600">
                                       {isProvisoire ? (
                                         <span className="text-gray-400 italic">Minimum 10 matchs</span>
@@ -767,6 +771,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
                                 <th className="text-center p-3 font-semibold">Matchs</th>
                                 <th className="text-center p-3 font-semibold">Victoires</th>
                                 <th className="text-center p-3 font-semibold">Défaites</th>
+                                <th className="text-center p-3 font-semibold">Taux de victoire</th>
                                 <th className="text-center p-3 font-semibold">ELO</th>
                               </tr>
                             </thead>
@@ -797,6 +802,9 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
                                       <td className="p-3 text-center">{stat.matches}</td>
                                       <td className="p-3 text-center text-green-600 font-semibold">{stat.wins}</td>
                                       <td className="p-3 text-center text-red-600 font-semibold">{stat.losses}</td>
+                                        <td className="p-3 text-center text-indigo-600 font-semibold">
+        {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
+      </td>
                                       <td className="p-3 text-center font-bold text-yellow-600">
                                         {isProvisoire
                                           ? <span className="text-gray-400 italic">Minimum 5 matchs</span>
