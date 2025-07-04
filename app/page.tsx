@@ -45,6 +45,7 @@ export default function BabyfootApp() {
   blueWins: 0,
   total: 0,
 })
+  const [totalGoals, setTotalGoals] = useState(0)
 
 
   // État du formulaire
@@ -123,6 +124,11 @@ export default function BabyfootApp() {
       const redWins = matchesData.filter(m => m.score_a > m.score_b).length
       const blueWins = matchesData.filter(m => m.score_b > m.score_a).length
       const total = redWins + blueWins
+      const goals = matchesData.reduce(
+      (sum, match) => sum + match.score_a + match.score_b,
+        0
+      )
+setTotalGoals(goals)
 
 setColorWinStats({ redWins, blueWins, total })
 
@@ -670,6 +676,9 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
               🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp;
               🔵 Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
             </p>
+              <p className="mt-2 text-sm text-gray-700">
+    ⚽ Nombre total de buts marqués : <span className="font-semibold">{totalGoals}</span>
+  </p>
           </div>
             </div>
            </TabsContent>
