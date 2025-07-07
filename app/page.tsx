@@ -420,10 +420,6 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
               <TrendingUp className="h-4 w-4" />
               Classements
             </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Administration
-            </TabsTrigger>
           </TabsList>
 
           {/* Onglet Nouveau match */}
