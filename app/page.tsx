@@ -411,7 +411,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
 
         {/* Navigation principale */}
         <Tabs defaultValue="match" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="match" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
               Matchs
@@ -420,6 +420,10 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
               <TrendingUp className="h-4 w-4" />
               Classements
             </TabsTrigger>
+         {/*   <TabsTrigger value="admin" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Administration
+            </TabsTrigger>*/}
           </TabsList>
 
           {/* Onglet Nouveau match */}
@@ -830,10 +834,10 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
             </Card>
           </TabsContent>
 
-          {/* 🆕 Onglet Administration */}
+          {/* 🆕 Onglet Administration 
           <TabsContent value="admin">
             <div className="space-y-6">
-              {/* Gestion des joueurs */}
+              {/* Gestion des joueurs *
               <Card className="shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-t-lg">
                   <CardTitle className="flex items-center gap-2">
@@ -886,7 +890,7 @@ const teamBElo = 0.75 * Math.max(ratings[teamB[0]], ratings[teamB[1]]) + 0.25 * 
               </Card>
 
             </div>
-          </TabsContent>
+          </TabsContent>*/}
         </Tabs>
 
         {/* Modals d'administration */}
