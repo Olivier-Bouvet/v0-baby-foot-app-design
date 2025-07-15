@@ -399,6 +399,51 @@ export default function BabyfootApp() {
           <p className="text-gray-600">Enregistrez vos matchs et suivez vos performances</p>
         </div>
 
+        {/* Statistiques globales */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card className="shadow-lg">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Trophy className="h-5 w-5 text-yellow-500" />
+                <h3 className="font-semibold text-gray-700">Matchs joués</h3>
+              </div>
+              <p className="text-2xl font-bold text-blue-600">{matches.length}</p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Target className="h-5 w-5 text-green-500" />
+                <h3 className="font-semibold text-gray-700">Total buts</h3>
+              </div>
+              <p className="text-2xl font-bold text-green-600">{totalGoals}</p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Users className="h-5 w-5 text-purple-500" />
+                <h3 className="font-semibold text-gray-700">Joueurs actifs</h3>
+              </div>
+              <p className="text-2xl font-bold text-purple-600">{players.length}</p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <TrendingUp className="h-5 w-5 text-orange-500" />
+                <h3 className="font-semibold text-gray-700">Moy. buts/match</h3>
+              </div>
+              <p className="text-2xl font-bold text-orange-600">
+                {matches.length > 0 ? (totalGoals / matches.length).toFixed(1) : "0"}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Navigation principale */}
         <Tabs defaultValue="match" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
@@ -675,16 +720,6 @@ export default function BabyfootApp() {
                   )}
                 </CardContent>
               </Card>
-              <div className="mb-6 text-center">
-                <p className="text-sm text-gray-700">🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :</p>
-                <p className="text-md font-semibold">
-                  🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp; 🔵
-                  Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
-                </p>
-                <p className="mt-2 text-sm text-gray-700">
-                  ⚽ Nombre total de buts marqués : <span className="font-semibold">{totalGoals}</span>
-                </p>
-              </div>
             </div>
           </TabsContent>
 
