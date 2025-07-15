@@ -687,6 +687,16 @@ export default function BabyfootApp() {
                   )}
                 </CardContent>
               </Card>
+              <div className="mb-6 text-center">
+                <p className="text-sm text-gray-700">🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :</p>
+                <p className="text-md font-semibold">
+                  🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp; 🔵
+                  Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
+                </p>
+                <p className="mt-2 text-sm text-gray-700">
+                  ⚽ Nombre total de buts marqués : <span className="font-semibold">{totalGoals}</span>
+                </p>
+              </div>
             </div>
           </TabsContent>
 
