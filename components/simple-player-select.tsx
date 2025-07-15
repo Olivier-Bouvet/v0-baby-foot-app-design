@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { User, Plus, X, ChevronDown } from "lucide-react"
 
 interface SimplePlayerSelectProps {
   position: string
@@ -63,37 +64,42 @@ export function SimplePlayerSelect({
   // État initial : rien de sélectionné
   if (!selectedPlayer && !newPlayerName && !isNewPlayerMode) {
     return (
-      <div className="space-y-2">
-        <Label className={`text-sm font-medium ${teamColor}`}>{label}</Label>
+      <div className="space-y-3">
+        <Label className={`text-sm font-semibold ${teamColor} flex items-center gap-2`}>
+          <User className="h-4 w-4" />
+          {label}
+        </Label>
         <div className="relative">
           <Button
             variant="outline"
-            className="w-full justify-between"
+            className="w-full justify-between h-12 bg-white/80 backdrop-blur-sm border-2 hover:border-gray-400 transition-all duration-200 shadow-lg hover:shadow-xl"
             onClick={() => {
               console.log(`🔽 Ouverture dropdown pour ${position}`)
               setShowDropdown(!showDropdown)
             }}
           >
-            Sélectionner un joueur
-            <span>▼</span>
+            <span className="text-gray-500">Sélectionner un joueur</span>
+            <ChevronDown className="h-4 w-4 text-gray-400" />
           </Button>
 
           {showDropdown && (
-            <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+            <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-auto backdrop-blur-sm">
               {players.map((player) => (
                 <button
                   key={player.id}
-                  className="w-full text-left px-3 py-2 hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                  className="w-full text-left px-4 py-3 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 border-b border-gray-100 last:border-b-0 transition-all duration-200 flex items-center gap-3"
                   onClick={() => handlePlayerClick(player.name)}
                 >
-                  {player.name}
+                  <User className="h-4 w-4 text-gray-400" />
+                  <span className="font-medium">{player.name}</span>
                 </button>
               ))}
               <button
-                className="w-full text-left px-3 py-2 hover:bg-gray-100 font-medium text-blue-600"
+                className="w-full text-left px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 font-semibold text-blue-600 transition-all duration-200 flex items-center gap-3"
                 onClick={handleNewPlayerClick}
               >
-                + Nouveau joueur
+                <Plus className="h-4 w-4" />
+                Nouveau joueur
               </button>
             </div>
           )}
@@ -105,8 +111,11 @@ export function SimplePlayerSelect({
   // Mode nouveau joueur
   if (isNewPlayerMode || (!selectedPlayer && newPlayerName !== "")) {
     return (
-      <div className="space-y-2">
-        <Label className={`text-sm font-medium ${teamColor}`}>{label}</Label>
+      <div className="space-y-3">
+        <Label className={`text-sm font-semibold ${teamColor} flex items-center gap-2`}>
+          <Plus className="h-4 w-4" />
+          {label} (nouveau)
+        </Label>
         <div className="flex items-center gap-2">
           <Input
             placeholder="Nom du nouveau joueur"
@@ -115,11 +124,16 @@ export function SimplePlayerSelect({
               console.log(`✏️ Saisie: ${e.target.value}`)
               onNewPlayerNameChange(e.target.value)
             }}
-            className="flex-1"
+            className="flex-1 h-12 bg-white/80 backdrop-blur-sm border-2 focus:border-blue-400 transition-all duration-200 shadow-lg"
             autoFocus
           />
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            Annuler
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            className="h-12 px-3 hover:bg-red-50 hover:border-red-300 transition-colors bg-transparent"
+          >
+            <X className="h-4 w-4 text-red-500" />
           </Button>
         </div>
       </div>
@@ -128,14 +142,26 @@ export function SimplePlayerSelect({
 
   // Joueur sélectionné
   return (
-    <div className="space-y-2">
-      <Label className={`text-sm font-medium ${teamColor}`}>{label}</Label>
+    <div className="space-y-3">
+      <Label className={`text-sm font-semibold ${teamColor} flex items-center gap-2`}>
+        <User className="h-4 w-4" />
+        {label}
+      </Label>
       <div className="flex items-center gap-2">
-        <Badge variant="secondary" className="flex-1 justify-center py-2">
+        <Badge
+          variant="secondary"
+          className="flex-1 justify-center py-3 px-4 text-base font-semibold bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 shadow-lg"
+        >
+          <User className="h-4 w-4 mr-2 text-gray-500" />
           {selectedPlayer}
         </Badge>
-        <Button variant="outline" size="sm" onClick={handleReset}>
-          Changer
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReset}
+          className="h-12 px-3 hover:bg-blue-50 hover:border-blue-300 transition-colors bg-transparent"
+        >
+          <X className="h-4 w-4 text-blue-500" />
         </Button>
       </div>
     </div>

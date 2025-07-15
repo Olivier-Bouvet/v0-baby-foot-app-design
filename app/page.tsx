@@ -6,7 +6,22 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Users, User, TrendingUp, Target, Loader2, Edit, Trash2, Calendar } from "lucide-react"
+import {
+  Trophy,
+  Users,
+  User,
+  TrendingUp,
+  Target,
+  Loader2,
+  Edit,
+  Trash2,
+  Calendar,
+  Zap,
+  Award,
+  Crown,
+  Medal,
+  Star,
+} from "lucide-react"
 import {
   getPlayers,
   getMatches,
@@ -376,64 +391,111 @@ export default function BabyfootApp() {
     }
   }
 
+  const getRankIcon = (index: number) => {
+    switch (index) {
+      case 0:
+        return <Crown className="h-5 w-5 text-yellow-500" />
+      case 1:
+        return <Medal className="h-5 w-5 text-gray-400" />
+      case 2:
+        return <Award className="h-5 w-5 text-amber-600" />
+      default:
+        return <Star className="h-4 w-4 text-gray-300" />
+    }
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Chargement des données...</p>
+          <div className="relative">
+            <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-600" />
+            <div className="absolute inset-0 h-12 w-12 mx-auto rounded-full border-4 border-blue-200 animate-pulse"></div>
+          </div>
+          <p className="text-gray-600 font-medium">Chargement des données...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center py-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Trophy className="h-8 w-8 text-yellow-500" />
-            <h1 className="text-4xl font-bold text-gray-900">MyLegiFoot Tracker</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="max-w-7xl mx-auto space-y-8 p-4">
+        {/* Header amélioré */}
+        <div className="text-center py-12 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 rounded-3xl blur-3xl"></div>
+          <div className="relative">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="relative">
+                <Trophy className="h-12 w-12 text-yellow-500 drop-shadow-lg" />
+                <div className="absolute -top-1 -right-1 h-4 w-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
+              </div>
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                MyLegiFoot Tracker
+              </h1>
+            </div>
+            <p className="text-gray-600 text-lg font-medium">Enregistrez vos matchs et suivez vos performances</p>
+
+            {/* Stats rapides */}
+            <div className="flex justify-center gap-8 mt-8">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{players.length}</div>
+                <div className="text-sm text-gray-500">Joueurs</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{matches.length}</div>
+                <div className="text-sm text-gray-500">Matchs</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-pink-600">{totalGoals}</div>
+                <div className="text-sm text-gray-500">Buts</div>
+              </div>
+            </div>
           </div>
-          <p className="text-gray-600">Enregistrez vos matchs et suivez vos performances</p>
         </div>
 
-        {/* Navigation principale */}
+        {/* Navigation principale améliorée */}
         <Tabs defaultValue="match" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="match" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg">
+            <TabsTrigger
+              value="match"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+            >
               <Target className="h-4 w-4" />
               Matchs
             </TabsTrigger>
-            <TabsTrigger value="rankings" className="flex items-center gap-2">
+            <TabsTrigger
+              value="rankings"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white"
+            >
               <TrendingUp className="h-4 w-4" />
               Classements
             </TabsTrigger>
-            {/*   <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Administration
-            </TabsTrigger>*/}
           </TabsList>
 
-          {/* Onglet Nouveau match */}
+          {/* Onglet Nouveau match amélioré */}
           <TabsContent value="match">
-            <div className="space-y-6">
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-red-500 to-blue-500 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
+            <div className="space-y-8">
+              <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 text-white rounded-t-lg relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-purple-500/20 to-blue-500/20 animate-pulse"></div>
+                  <CardTitle className="flex items-center gap-3 relative z-10">
+                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                      <Target className="h-6 w-6" />
+                    </div>
                     Nouveau match
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:items-center">
+                <CardContent className="p-8">
+                  <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-12 lg:items-center">
                     {/* Équipe A - Gauche */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-red-600 flex items-center justify-center gap-2">
-                        <Users className="h-5 w-5" />
-                        Équipe rouge
-                      </h3>
+                    <div className="space-y-6">
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full shadow-lg">
+                          <Users className="h-5 w-5" />
+                          <span className="font-semibold">Équipe Rouge</span>
+                        </div>
+                      </div>
                       <div className="space-y-4">
                         <SimplePlayerSelect
                           position="teamA1"
@@ -466,18 +528,21 @@ export default function BabyfootApp() {
                       </div>
                     </div>
 
-                    {/* Score - Centre */}
-                    <div className="flex flex-col items-center space-y-4 order-last lg:order-none">
+                    {/* Score - Centre amélioré */}
+                    <div className="flex flex-col items-center space-y-6 order-last lg:order-none">
                       <div className="text-center w-full">
-                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Score</h3>
-                        <div className="flex items-center justify-center gap-2 sm:gap-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-full shadow-lg mb-6">
+                          <Zap className="h-5 w-5" />
+                          <span className="font-semibold">Score</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-4">
                           {/* Score Équipe A */}
-                          <div className="text-center flex-1 max-w-[120px]">
-                            <Label className="text-xs sm:text-sm font-medium text-red-600 mb-2 block">Rouge</Label>
+                          <div className="text-center flex-1 max-w-[140px]">
+                            <Label className="text-sm font-semibold text-red-600 mb-3 block">Rouge</Label>
                             <select
                               value={scores.teamA}
                               onChange={(e) => setScores((prev) => ({ ...prev, teamA: e.target.value }))}
-                              className="w-full h-12 sm:h-16 text-xl sm:text-2xl font-bold text-center border-2 border-red-300 rounded-lg bg-white hover:border-red-400 focus:border-red-500 focus:outline-none"
+                              className="w-full h-16 text-3xl font-bold text-center border-3 border-red-300 rounded-xl bg-gradient-to-b from-white to-red-50 hover:border-red-400 focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-200 transition-all duration-200 shadow-lg"
                             >
                               <option value="">-</option>
                               {Array.from({ length: 11 }, (_, i) => (
@@ -488,16 +553,19 @@ export default function BabyfootApp() {
                             </select>
                           </div>
 
-                          {/* Trait d'union */}
-                          <div className="text-2xl sm:text-4xl font-bold text-gray-400 px-1 sm:px-4">-</div>
+                          {/* VS */}
+                          <div className="flex flex-col items-center px-4">
+                            <div className="text-4xl font-bold text-gray-400 mb-2">VS</div>
+                            <div className="w-8 h-1 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></div>
+                          </div>
 
                           {/* Score Équipe B */}
-                          <div className="text-center flex-1 max-w-[120px]">
-                            <Label className="text-xs sm:text-sm font-medium text-blue-600 mb-2 block">Bleue</Label>
+                          <div className="text-center flex-1 max-w-[140px]">
+                            <Label className="text-sm font-semibold text-blue-600 mb-3 block">Bleue</Label>
                             <select
                               value={scores.teamB}
                               onChange={(e) => setScores((prev) => ({ ...prev, teamB: e.target.value }))}
-                              className="w-full h-12 sm:h-16 text-xl sm:text-2xl font-bold text-center border-2 border-blue-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none"
+                              className="w-full h-16 text-3xl font-bold text-center border-3 border-blue-300 rounded-xl bg-gradient-to-b from-white to-blue-50 hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-200 transition-all duration-200 shadow-lg"
                             >
                               <option value="">-</option>
                               {Array.from({ length: 11 }, (_, i) => (
@@ -511,8 +579,11 @@ export default function BabyfootApp() {
 
                         {/* Affichage du score sélectionné */}
                         {(scores.teamA || scores.teamB) && (
-                          <div className="mt-4">
-                            <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-2">
+                          <div className="mt-6">
+                            <Badge
+                              variant="secondary"
+                              className="text-xl px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 border-2 border-gray-300 shadow-lg"
+                            >
                               {scores.teamA || "0"} - {scores.teamB || "0"}
                             </Badge>
                           </div>
@@ -521,11 +592,13 @@ export default function BabyfootApp() {
                     </div>
 
                     {/* Équipe B - Droite */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-blue-600 flex items-center justify-center gap-2">
-                        <Users className="h-5 w-5" />
-                        Équipe bleue
-                      </h3>
+                    <div className="space-y-6">
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full shadow-lg">
+                          <Users className="h-5 w-5" />
+                          <span className="font-semibold">Équipe Bleue</span>
+                        </div>
+                      </div>
                       <div className="space-y-4">
                         <SimplePlayerSelect
                           position="teamB1"
@@ -559,107 +632,126 @@ export default function BabyfootApp() {
                     </div>
                   </div>
 
-                  <div className="mt-8 text-center">
+                  <div className="mt-10 text-center">
                     <Button
                       onClick={validateMatch}
                       disabled={submitting}
                       size="lg"
-                      className="bg-gradient-to-r from-red-500 to-blue-500 hover:from-red-600 hover:to-blue-600 text-white px-8 py-3"
+                      className="bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 hover:from-red-600 hover:via-purple-600 hover:to-blue-600 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
                     >
                       {submitting ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                           Enregistrement...
                         </>
                       ) : (
-                        "Valider le match"
+                        <>
+                          <Trophy className="mr-3 h-5 w-5" />
+                          Valider le match
+                        </>
                       )}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Gestion des matchs */}
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
+              {/* Historique des matchs amélioré */}
+              <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-t-lg relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 animate-pulse"></div>
+                  <CardTitle className="flex items-center gap-3 relative z-10">
+                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                      <Calendar className="h-6 w-6" />
+                    </div>
                     Historique des matchs ({matches.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-3 sm:p-6">
+                <CardContent className="p-6">
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse min-w-[600px]">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe rouge</th>
-                          <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[80px]">
-                            Score
-                          </th>
-                          <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe bleue</th>
-                          <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[100px]">
-                            Actions
-                          </th>
+                          <th className="text-left p-4 font-bold text-gray-700">Équipe rouge</th>
+                          <th className="text-center p-4 font-bold text-gray-700 min-w-[100px]">Score</th>
+                          <th className="text-left p-4 font-bold text-gray-700">Équipe bleue</th>
+                          <th className="text-center p-4 font-bold text-gray-700 min-w-[120px]">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {[...matches]
                           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                           .slice(0, 20)
-                          .map((match) => (
-                            <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
-                              <td className="p-2 sm:p-3">
-                                <div className="text-xs sm:text-sm">
-                                  <div className="font-medium text-red-600 break-words">
-                                    <span className="block sm:inline">{match.team_a_player_1}</span>
-                                    <span className="hidden sm:inline"> & </span>
-                                    <span className="block sm:inline">{match.team_a_player_2}</span>
+                          .map((match, index) => (
+                            <tr
+                              key={match.id}
+                              className={`border-b border-gray-100 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all duration-200 ${index % 2 === 0 ? "bg-gray-50/50" : "bg-white"}`}
+                            >
+                              <td className="p-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                                  <div className="text-sm font-medium">
+                                    <div className="text-red-600 break-words">
+                                      <span className="block sm:inline font-semibold">{match.team_a_player_1}</span>
+                                      <span className="hidden sm:inline text-gray-400"> & </span>
+                                      <span className="block sm:inline font-semibold">{match.team_a_player_2}</span>
+                                    </div>
                                   </div>
                                 </div>
                               </td>
-                              <td className="p-2 sm:p-3 text-center">
-                                <div className="flex items-center justify-center gap-1">
+                              <td className="p-4 text-center">
+                                <div className="flex items-center justify-center gap-2">
                                   <Badge
                                     variant={match.score_a > match.score_b ? "default" : "secondary"}
-                                    className="text-xs sm:text-sm px-1 sm:px-2"
+                                    className={`text-lg px-3 py-1 font-bold ${
+                                      match.score_a > match.score_b
+                                        ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                                        : "bg-gray-200 text-gray-600"
+                                    }`}
                                   >
                                     {match.score_a}
                                   </Badge>
-                                  <span className="text-xs sm:text-sm">-</span>
+                                  <span className="text-lg font-bold text-gray-400">-</span>
                                   <Badge
                                     variant={match.score_b > match.score_a ? "default" : "secondary"}
-                                    className="text-xs sm:text-sm px-1 sm:px-2"
+                                    className={`text-lg px-3 py-1 font-bold ${
+                                      match.score_b > match.score_a
+                                        ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                                        : "bg-gray-200 text-gray-600"
+                                    }`}
                                   >
                                     {match.score_b}
                                   </Badge>
                                 </div>
                               </td>
-                              <td className="p-2 sm:p-3">
-                                <div className="text-xs sm:text-sm">
-                                  <div className="font-medium text-blue-600 break-words">
-                                    <span className="block sm:inline">{match.team_b_player_1}</span>
-                                    <span className="hidden sm:inline"> & </span>
-                                    <span className="block sm:inline">{match.team_b_player_2}</span>
+                              <td className="p-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                  <div className="text-sm font-medium">
+                                    <div className="text-blue-600 break-words">
+                                      <span className="block sm:inline font-semibold">{match.team_b_player_1}</span>
+                                      <span className="hidden sm:inline text-gray-400"> & </span>
+                                      <span className="block sm:inline font-semibold">{match.team_b_player_2}</span>
+                                    </div>
                                   </div>
                                 </div>
                               </td>
-                              <td className="p-2 sm:p-3 text-center">
-                                <div className="flex items-center justify-center gap-1 sm:gap-2">
+                              <td className="p-4 text-center">
+                                <div className="flex items-center justify-center gap-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setEditMatchModal({ isOpen: true, match })}
-                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    className="h-8 w-8 p-0 hover:bg-blue-50 hover:border-blue-300 transition-colors"
                                   >
-                                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    <Edit className="h-4 w-4 text-blue-600" />
                                   </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setDeleteMatchModal({ isOpen: true, match })}
-                                    className="text-red-600 hover:text-red-700 h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 h-8 w-8 p-0 transition-colors"
                                   >
-                                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </td>
@@ -669,255 +761,279 @@ export default function BabyfootApp() {
                     </table>
                   </div>
                   {matches.length > 20 && (
-                    <p className="text-center text-gray-500 mt-4 text-sm">
+                    <p className="text-center text-gray-500 mt-6 text-sm bg-gray-50 py-3 rounded-lg">
                       Affichage des 20 matchs les plus récents sur {matches.length} au total
                     </p>
                   )}
                 </CardContent>
               </Card>
-              <div className="mb-6 text-center">
-                <p className="text-sm text-gray-700">🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :</p>
-                <p className="text-md font-semibold">
-                  🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp; 🔵
-                  Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
-                </p>
-                <p className="mt-2 text-sm text-gray-700">
-                  ⚽ Nombre total de buts marqués : <span className="font-semibold">{totalGoals}</span>
-                </p>
+
+              {/* Statistiques couleurs améliorées */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="shadow-xl border-0 bg-gradient-to-br from-red-50 to-red-100">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                      <span className="font-semibold text-red-700">Victoires Rouge</span>
+                    </div>
+                    <div className="text-3xl font-bold text-red-600">
+                      {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}%
+                    </div>
+                    <div className="text-sm text-red-500">{colorWinStats.redWins} victoires</div>
+                  </CardContent>
+                </Card>
+
+                <Card className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-blue-100">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                      <span className="font-semibold text-blue-700">Victoires Bleue</span>
+                    </div>
+                    <div className="text-3xl font-bold text-blue-600">
+                      {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
+                    </div>
+                    <div className="text-sm text-blue-500">{colorWinStats.blueWins} victoires</div>
+                  </CardContent>
+                </Card>
+
+                <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-green-100">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <Target className="w-4 h-4 text-green-600" />
+                      <span className="font-semibold text-green-700">Total Buts</span>
+                    </div>
+                    <div className="text-3xl font-bold text-green-600">{totalGoals}</div>
+                    <div className="text-sm text-green-500">buts marqués</div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </TabsContent>
 
-          {/* Onglet Classements */}
+          {/* Onglet Classements amélioré */}
           <TabsContent value="rankings">
-            <Card className="shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
+            <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white rounded-t-lg relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-red-500/20 animate-pulse"></div>
+                <CardTitle className="flex items-center gap-3 relative z-10">
+                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <TrendingUp className="h-6 w-6" />
+                  </div>
                   Classements
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <Tabs defaultValue="individual" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
-                    <TabsTrigger value="individual" className="flex items-center gap-2">
+                  <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg">
+                    <TabsTrigger
+                      value="individual"
+                      className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white"
+                    >
                       <User className="h-4 w-4" />
                       Classement individuel
                     </TabsTrigger>
-                    <TabsTrigger value="duo" className="flex items-center gap-2">
+                    <TabsTrigger
+                      value="duo"
+                      className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-red-500 data-[state=active]:text-white"
+                    >
                       <Users className="h-4 w-4" />
                       Classement par duo
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="individual">
-                    <Tabs defaultValue="score" className="w-full">
-                      <TabsContent value="score">
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse min-w-[500px]">
-                            <thead>
-                              <tr className="border-b-2 border-gray-200">
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Rang</th>
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Joueur</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">Matchs</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">V</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">D</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">%</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">ELO</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {individualStats
-                                .sort((a, b) => {
-                                  const eloA = eloRatings[a.name] ?? 1000
-                                  const eloB = eloRatings[b.name] ?? 1000
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse min-w-[600px]">
+                        <thead>
+                          <tr className="border-b-2 border-gray-200">
+                            <th className="text-left p-4 font-bold text-gray-700">Rang</th>
+                            <th className="text-left p-4 font-bold text-gray-700">Joueur</th>
+                            <th className="text-center p-4 font-bold text-gray-700">Matchs</th>
+                            <th className="text-center p-4 font-bold text-gray-700">V</th>
+                            <th className="text-center p-4 font-bold text-gray-700">D</th>
+                            <th className="text-center p-4 font-bold text-gray-700">%</th>
+                            <th className="text-center p-4 font-bold text-gray-700">ELO</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {individualStats
+                            .sort((a, b) => {
+                              const eloA = eloRatings[a.name] ?? 1000
+                              const eloB = eloRatings[b.name] ?? 1000
 
-                                  if (a.matches < 10 && b.matches >= 10) return 1
-                                  if (a.matches >= 10 && b.matches < 10) return -1
+                              if (a.matches < 10 && b.matches >= 10) return 1
+                              if (a.matches >= 10 && b.matches < 10) return -1
 
-                                  return eloB - eloA
-                                })
-                                .map((stat, index) => {
-                                  const elo = eloRatings[stat.name]
-                                  const isProvisoire = stat.matches < 10
+                              return eloB - eloA
+                            })
+                            .map((stat, index) => {
+                              const elo = eloRatings[stat.name]
+                              const isProvisoire = stat.matches < 10
 
-                                  return (
-                                    <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
-                                      <td className="p-2 sm:p-3">
-                                        <Badge
-                                          variant={index < 3 ? "default" : "secondary"}
-                                          className="text-xs sm:text-sm"
-                                        >
-                                          #{index + 1}
-                                        </Badge>
-                                      </td>
-                                      <td className="p-2 sm:p-3 font-medium text-sm sm:text-base break-words">
-                                        {stat.name}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-sm sm:text-base">{stat.matches}</td>
-                                      <td className="p-2 sm:p-3 text-center text-green-600 font-semibold text-sm sm:text-base">
-                                        {stat.wins}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-red-600 font-semibold text-sm sm:text-base">
-                                        {stat.losses}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-indigo-600 font-semibold text-sm sm:text-base">
-                                        {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center font-bold text-yellow-600 text-sm sm:text-base">
-                                        {isProvisoire ? (
-                                          <span className="text-gray-400 italic text-xs">Min 10</span>
-                                        ) : (
-                                          Math.round(elo ?? 1000)
-                                        )}
-                                      </td>
-                                    </tr>
-                                  )
-                                })}
-                            </tbody>
-                          </table>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
+                              return (
+                                <tr
+                                  key={stat.name}
+                                  className={`border-b border-gray-100 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 ${index % 2 === 0 ? "bg-gray-50/50" : "bg-white"}`}
+                                >
+                                  <td className="p-4">
+                                    <div className="flex items-center gap-3">
+                                      {getRankIcon(index)}
+                                      <Badge
+                                        variant={index < 3 ? "default" : "secondary"}
+                                        className={`text-sm font-bold px-3 py-1 ${
+                                          index === 0
+                                            ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-lg"
+                                            : index === 1
+                                              ? "bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-lg"
+                                              : index === 2
+                                                ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg"
+                                                : "bg-gray-200 text-gray-600"
+                                        }`}
+                                      >
+                                        #{index + 1}
+                                      </Badge>
+                                    </div>
+                                  </td>
+                                  <td className="p-4 font-semibold text-gray-800 break-words">{stat.name}</td>
+                                  <td className="p-4 text-center font-medium">{stat.matches}</td>
+                                  <td className="p-4 text-center">
+                                    <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                                      {stat.wins}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold">
+                                      {stat.losses}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    <span className="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-semibold">
+                                      {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    {isProvisoire ? (
+                                      <span className="text-gray-400 italic text-sm bg-gray-100 px-2 py-1 rounded-full">
+                                        Min 10
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-full text-sm font-bold shadow-lg">
+                                        {Math.round(elo ?? 1000)}
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                        </tbody>
+                      </table>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="duo">
-                    <Tabs defaultValue="score" className="w-full">
-                      <TabsContent value="score">
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse min-w-[600px]">
-                            <thead>
-                              <tr className="border-b-2 border-gray-200">
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Rang</th>
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Duo</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">Matchs</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">V</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">D</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">%</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">ELO</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {duoStats
-                                .sort((a, b) => {
-                                  const keyA = a.players.slice().sort().join(" & ")
-                                  const keyB = b.players.slice().sort().join(" & ")
-                                  const eloA = duoEloRatings[keyA] ?? 1000
-                                  const eloB = duoEloRatings[keyB] ?? 1000
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse min-w-[700px]">
+                        <thead>
+                          <tr className="border-b-2 border-gray-200">
+                            <th className="text-left p-4 font-bold text-gray-700">Rang</th>
+                            <th className="text-left p-4 font-bold text-gray-700">Duo</th>
+                            <th className="text-center p-4 font-bold text-gray-700">Matchs</th>
+                            <th className="text-center p-4 font-bold text-gray-700">V</th>
+                            <th className="text-center p-4 font-bold text-gray-700">D</th>
+                            <th className="text-center p-4 font-bold text-gray-700">%</th>
+                            <th className="text-center p-4 font-bold text-gray-700">ELO</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {duoStats
+                            .sort((a, b) => {
+                              const keyA = a.players.slice().sort().join(" & ")
+                              const keyB = b.players.slice().sort().join(" & ")
+                              const eloA = duoEloRatings[keyA] ?? 1000
+                              const eloB = duoEloRatings[keyB] ?? 1000
 
-                                  if (a.matches < 5 && b.matches >= 5) return 1
-                                  if (a.matches >= 5 && b.matches < 5) return -1
+                              if (a.matches < 5 && b.matches >= 5) return 1
+                              if (a.matches >= 5 && b.matches < 5) return -1
 
-                                  return eloB - eloA
-                                })
-                                .map((stat, index) => {
-                                  const key = stat.players.slice().sort().join(" & ")
-                                  const elo = duoEloRatings[key] ?? 1000
-                                  const isProvisoire = stat.matches < 5
+                              return eloB - eloA
+                            })
+                            .map((stat, index) => {
+                              const key = stat.players.slice().sort().join(" & ")
+                              const elo = duoEloRatings[key] ?? 1000
+                              const isProvisoire = stat.matches < 5
 
-                                  return (
-                                    <tr key={key} className="border-b border-gray-100 hover:bg-gray-50">
-                                      <td className="p-2 sm:p-3">
-                                        <Badge
-                                          variant={index < 3 && !isProvisoire ? "default" : "secondary"}
-                                          className="text-xs sm:text-sm"
-                                        >
-                                          #{index + 1}
-                                        </Badge>
-                                      </td>
-                                      <td className="p-2 sm:p-3 font-medium text-sm sm:text-base break-words">
+                              return (
+                                <tr
+                                  key={key}
+                                  className={`border-b border-gray-100 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 transition-all duration-200 ${index % 2 === 0 ? "bg-gray-50/50" : "bg-white"}`}
+                                >
+                                  <td className="p-4">
+                                    <div className="flex items-center gap-3">
+                                      {getRankIcon(index)}
+                                      <Badge
+                                        variant={index < 3 && !isProvisoire ? "default" : "secondary"}
+                                        className={`text-sm font-bold px-3 py-1 ${
+                                          index === 0 && !isProvisoire
+                                            ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-lg"
+                                            : index === 1 && !isProvisoire
+                                              ? "bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-lg"
+                                              : index === 2 && !isProvisoire
+                                                ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg"
+                                                : "bg-gray-200 text-gray-600"
+                                        }`}
+                                      >
+                                        #{index + 1}
+                                      </Badge>
+                                    </div>
+                                  </td>
+                                  <td className="p-4 font-semibold text-gray-800 break-words">
+                                    <div className="flex items-center gap-2">
+                                      <Users className="h-4 w-4 text-gray-500" />
+                                      <span>
                                         <span className="block sm:inline">{stat.players[0]}</span>
-                                        <span className="hidden sm:inline"> & </span>
+                                        <span className="hidden sm:inline text-gray-400"> & </span>
                                         <span className="block sm:inline">{stat.players[1]}</span>
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-sm sm:text-base">{stat.matches}</td>
-                                      <td className="p-2 sm:p-3 text-center text-green-600 font-semibold text-sm sm:text-base">
-                                        {stat.wins}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-red-600 font-semibold text-sm sm:text-base">
-                                        {stat.losses}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-indigo-600 font-semibold text-sm sm:text-base">
-                                        {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center font-bold text-yellow-600 text-sm sm:text-base">
-                                        {isProvisoire ? (
-                                          <span className="text-gray-400 italic text-xs">Min 5</span>
-                                        ) : (
-                                          Math.round(elo)
-                                        )}
-                                      </td>
-                                    </tr>
-                                  )
-                                })}
-                            </tbody>
-                          </table>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="p-4 text-center font-medium">{stat.matches}</td>
+                                  <td className="p-4 text-center">
+                                    <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                                      {stat.wins}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold">
+                                      {stat.losses}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    <span className="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-semibold">
+                                      {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    {isProvisoire ? (
+                                      <span className="text-gray-400 italic text-sm bg-gray-100 px-2 py-1 rounded-full">
+                                        Min 5
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-full text-sm font-bold shadow-lg">
+                                        {Math.round(elo)}
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                        </tbody>
+                      </table>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* 🆕 Onglet Administration 
-          <TabsContent value="admin">
-            <div className="space-y-6">
-              {/* Gestion des joueurs *
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Gestion des joueurs ({players.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-3 font-semibold">Nom</th>
-                          <th className="text-center p-3 font-semibold">Date de création</th>
-                          <th className="text-center p-3 font-semibold">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {players.map((player) => (
-                          <tr key={player.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="p-3 font-medium">{player.name}</td>
-                            <td className="p-3 text-center text-gray-600">
-                              {new Date(player.created_at).toLocaleDateString("fr-FR")}
-                            </td>
-                            <td className="p-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setEditPlayerModal({ isOpen: true, player })}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setDeletePlayerModal({ isOpen: true, player })}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-            </div>
-          </TabsContent>*/}
         </Tabs>
 
         {/* Modals d'administration */}
