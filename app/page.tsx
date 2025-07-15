@@ -25,8 +25,12 @@ import { DeletePlayerModal, EditPlayerModal, EditMatchModal, DeleteMatchModal } 
 import { SimplePlayerSelect } from "@/components/simple-player-select"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
+import { ProtectedRoute } from "@/components/auth/protected-route"
+import { UserMenu } from "@/components/auth/user-menu"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function BabyfootApp() {
+  const { user, loading: authLoading } = useAuth()
   const [players, setPlayers] = useState<Player[]>([])
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(true)
@@ -92,8 +96,10 @@ export default function BabyfootApp() {
 
   // Charger les données au démarrage
   useEffect(() => {
-    loadData()
-  }, [])
+    if (user) {
+      loadData()
+    }
+  }, [user])
 
   const loadData = async () => {
     setLoading(true)
@@ -376,7 +382,7 @@ export default function BabyfootApp() {
     }
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -388,571 +394,516 @@ export default function BabyfootApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center py-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Trophy className="h-8 w-8 text-yellow-500" />
-            <h1 className="text-4xl font-bold text-gray-900">MyLegiFoot Tracker</h1>
-          </div>
-          <p className="text-gray-600">Enregistrez vos matchs et suivez vos performances</p>
-        </div>
-
-        {/* Navigation principale */}
-        <Tabs defaultValue="match" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="match" className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              Matchs
-            </TabsTrigger>
-            <TabsTrigger value="rankings" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Classements
-            </TabsTrigger>
-            {/*   <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Administration
-            </TabsTrigger>*/}
-          </TabsList>
-
-          {/* Onglet Nouveau match */}
-          <TabsContent value="match">
-            <div className="space-y-6">
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-red-500 to-blue-500 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Nouveau match
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:items-center">
-                    {/* Équipe A - Gauche */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-red-600 flex items-center justify-center gap-2">
-                        <Users className="h-5 w-5" />
-                        Équipe rouge
-                      </h3>
-                      <div className="space-y-4">
-                        <SimplePlayerSelect
-                          position="teamA1"
-                          label="Joueur 1"
-                          teamColor="text-red-600"
-                          players={players}
-                          selectedPlayer={selectedPlayers.teamA1}
-                          newPlayerName={newPlayerNames.teamA1}
-                          onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamA1: value }))}
-                          onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamA1: value }))}
-                          onReset={() => {
-                            setSelectedPlayers((prev) => ({ ...prev, teamA1: "" }))
-                            setNewPlayerNames((prev) => ({ ...prev, teamA1: "" }))
-                          }}
-                        />
-                        <SimplePlayerSelect
-                          position="teamA2"
-                          label="Joueur 2"
-                          teamColor="text-red-600"
-                          players={players}
-                          selectedPlayer={selectedPlayers.teamA2}
-                          newPlayerName={newPlayerNames.teamA2}
-                          onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamA2: value }))}
-                          onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamA2: value }))}
-                          onReset={() => {
-                            setSelectedPlayers((prev) => ({ ...prev, teamA2: "" }))
-                            setNewPlayerNames((prev) => ({ ...prev, teamA2: "" }))
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Score - Centre */}
-                    <div className="flex flex-col items-center space-y-4 order-last lg:order-none">
-                      <div className="text-center w-full">
-                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Score</h3>
-                        <div className="flex items-center justify-center gap-2 sm:gap-4">
-                          {/* Score Équipe A */}
-                          <div className="text-center flex-1 max-w-[120px]">
-                            <Label className="text-xs sm:text-sm font-medium text-red-600 mb-2 block">Rouge</Label>
-                            <select
-                              value={scores.teamA}
-                              onChange={(e) => setScores((prev) => ({ ...prev, teamA: e.target.value }))}
-                              className="w-full h-12 sm:h-16 text-xl sm:text-2xl font-bold text-center border-2 border-red-300 rounded-lg bg-white hover:border-red-400 focus:border-red-500 focus:outline-none"
-                            >
-                              <option value="">-</option>
-                              {Array.from({ length: 11 }, (_, i) => (
-                                <option key={i} value={i.toString()}>
-                                  {i}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* Trait d'union */}
-                          <div className="text-2xl sm:text-4xl font-bold text-gray-400 px-1 sm:px-4">-</div>
-
-                          {/* Score Équipe B */}
-                          <div className="text-center flex-1 max-w-[120px]">
-                            <Label className="text-xs sm:text-sm font-medium text-blue-600 mb-2 block">Bleue</Label>
-                            <select
-                              value={scores.teamB}
-                              onChange={(e) => setScores((prev) => ({ ...prev, teamB: e.target.value }))}
-                              className="w-full h-12 sm:h-16 text-xl sm:text-2xl font-bold text-center border-2 border-blue-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none"
-                            >
-                              <option value="">-</option>
-                              {Array.from({ length: 11 }, (_, i) => (
-                                <option key={i} value={i.toString()}>
-                                  {i}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-
-                        {/* Affichage du score sélectionné */}
-                        {(scores.teamA || scores.teamB) && (
-                          <div className="mt-4">
-                            <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-2">
-                              {scores.teamA || "0"} - {scores.teamB || "0"}
-                            </Badge>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Équipe B - Droite */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-blue-600 flex items-center justify-center gap-2">
-                        <Users className="h-5 w-5" />
-                        Équipe bleue
-                      </h3>
-                      <div className="space-y-4">
-                        <SimplePlayerSelect
-                          position="teamB1"
-                          label="Joueur 1"
-                          teamColor="text-blue-600"
-                          players={players}
-                          selectedPlayer={selectedPlayers.teamB1}
-                          newPlayerName={newPlayerNames.teamB1}
-                          onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamB1: value }))}
-                          onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamB1: value }))}
-                          onReset={() => {
-                            setSelectedPlayers((prev) => ({ ...prev, teamB1: "" }))
-                            setNewPlayerNames((prev) => ({ ...prev, teamB1: "" }))
-                          }}
-                        />
-                        <SimplePlayerSelect
-                          position="teamB2"
-                          label="Joueur 2"
-                          teamColor="text-blue-600"
-                          players={players}
-                          selectedPlayer={selectedPlayers.teamB2}
-                          newPlayerName={newPlayerNames.teamB2}
-                          onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamB2: value }))}
-                          onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamB2: value }))}
-                          onReset={() => {
-                            setSelectedPlayers((prev) => ({ ...prev, teamB2: "" }))
-                            setNewPlayerNames((prev) => ({ ...prev, teamB2: "" }))
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 text-center">
-                    <Button
-                      onClick={validateMatch}
-                      disabled={submitting}
-                      size="lg"
-                      className="bg-gradient-to-r from-red-500 to-blue-500 hover:from-red-600 hover:to-blue-600 text-white px-8 py-3"
-                    >
-                      {submitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Enregistrement...
-                        </>
-                      ) : (
-                        "Valider le match"
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Gestion des matchs */}
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Historique des matchs ({matches.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 sm:p-6">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse min-w-[600px]">
-                      <thead>
-                        <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe rouge</th>
-                          <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[80px]">
-                            Score
-                          </th>
-                          <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe bleue</th>
-                          <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[100px]">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[...matches]
-                          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                          .slice(0, 20)
-                          .map((match) => (
-                            <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
-                              <td className="p-2 sm:p-3">
-                                <div className="text-xs sm:text-sm">
-                                  <div className="font-medium text-red-600 break-words">
-                                    <span className="block sm:inline">{match.team_a_player_1}</span>
-                                    <span className="hidden sm:inline"> & </span>
-                                    <span className="block sm:inline">{match.team_a_player_2}</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="p-2 sm:p-3 text-center">
-                                <div className="flex items-center justify-center gap-1">
-                                  <Badge
-                                    variant={match.score_a > match.score_b ? "default" : "secondary"}
-                                    className="text-xs sm:text-sm px-1 sm:px-2"
-                                  >
-                                    {match.score_a}
-                                  </Badge>
-                                  <span className="text-xs sm:text-sm">-</span>
-                                  <Badge
-                                    variant={match.score_b > match.score_a ? "default" : "secondary"}
-                                    className="text-xs sm:text-sm px-1 sm:px-2"
-                                  >
-                                    {match.score_b}
-                                  </Badge>
-                                </div>
-                              </td>
-                              <td className="p-2 sm:p-3">
-                                <div className="text-xs sm:text-sm">
-                                  <div className="font-medium text-blue-600 break-words">
-                                    <span className="block sm:inline">{match.team_b_player_1}</span>
-                                    <span className="hidden sm:inline"> & </span>
-                                    <span className="block sm:inline">{match.team_b_player_2}</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="p-2 sm:p-3 text-center">
-                                <div className="flex items-center justify-center gap-1 sm:gap-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setEditMatchModal({ isOpen: true, match })}
-                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0"
-                                  >
-                                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setDeleteMatchModal({ isOpen: true, match })}
-                                    className="text-red-600 hover:text-red-700 h-7 w-7 sm:h-8 sm:w-8 p-0"
-                                  >
-                                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {matches.length > 20 && (
-                    <p className="text-center text-gray-500 mt-4 text-sm">
-                      Affichage des 20 matchs les plus récents sur {matches.length} au total
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-              <div className="mb-6 text-center">
-                <p className="text-sm text-gray-700">🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :</p>
-                <p className="text-md font-semibold">
-                  🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp; 🔵
-                  Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
-                </p>
-                <p className="mt-2 text-sm text-gray-700">
-                  ⚽ Nombre total de buts marqués : <span className="font-semibold">{totalGoals}</span>
-                </p>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="flex items-center justify-between py-8">
+            <div className="text-center flex-1">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Trophy className="h-8 w-8 text-yellow-500" />
+                <h1 className="text-4xl font-bold text-gray-900">MyLegiFoot Tracker</h1>
               </div>
+              <p className="text-gray-600">Enregistrez vos matchs et suivez vos performances</p>
             </div>
-          </TabsContent>
+            <div className="absolute top-4 right-4">
+              <UserMenu />
+            </div>
+          </div>
 
-          {/* Onglet Classements */}
-          <TabsContent value="rankings">
-            <Card className="shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Classements
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <Tabs defaultValue="individual" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
-                    <TabsTrigger value="individual" className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Classement individuel
-                    </TabsTrigger>
-                    <TabsTrigger value="duo" className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      Classement par duo
-                    </TabsTrigger>
-                  </TabsList>
+          {/* Navigation principale */}
+          <Tabs defaultValue="match" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="match" className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                Matchs
+              </TabsTrigger>
+              <TabsTrigger value="rankings" className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Classements
+              </TabsTrigger>
+            </TabsList>
 
-                  <TabsContent value="individual">
-                    <Tabs defaultValue="score" className="w-full">
-                      <TabsContent value="score">
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse min-w-[500px]">
-                            <thead>
-                              <tr className="border-b-2 border-gray-200">
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Rang</th>
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Joueur</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">Matchs</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">V</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">D</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">%</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">ELO</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {individualStats
-                                .sort((a, b) => {
-                                  const eloA = eloRatings[a.name] ?? 1000
-                                  const eloB = eloRatings[b.name] ?? 1000
-
-                                  if (a.matches < 10 && b.matches >= 10) return 1
-                                  if (a.matches >= 10 && b.matches < 10) return -1
-
-                                  return eloB - eloA
-                                })
-                                .map((stat, index) => {
-                                  const elo = eloRatings[stat.name]
-                                  const isProvisoire = stat.matches < 10
-
-                                  return (
-                                    <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
-                                      <td className="p-2 sm:p-3">
-                                        <Badge
-                                          variant={index < 3 ? "default" : "secondary"}
-                                          className="text-xs sm:text-sm"
-                                        >
-                                          #{index + 1}
-                                        </Badge>
-                                      </td>
-                                      <td className="p-2 sm:p-3 font-medium text-sm sm:text-base break-words">
-                                        {stat.name}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-sm sm:text-base">{stat.matches}</td>
-                                      <td className="p-2 sm:p-3 text-center text-green-600 font-semibold text-sm sm:text-base">
-                                        {stat.wins}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-red-600 font-semibold text-sm sm:text-base">
-                                        {stat.losses}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-indigo-600 font-semibold text-sm sm:text-base">
-                                        {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center font-bold text-yellow-600 text-sm sm:text-base">
-                                        {isProvisoire ? (
-                                          <span className="text-gray-400 italic text-xs">Min 10</span>
-                                        ) : (
-                                          Math.round(elo ?? 1000)
-                                        )}
-                                      </td>
-                                    </tr>
-                                  )
-                                })}
-                            </tbody>
-                          </table>
+            {/* Onglet Nouveau match */}
+            <TabsContent value="match">
+              <div className="space-y-6">
+                <Card className="shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-red-500 to-blue-500 text-white rounded-t-lg">
+                    <CardTitle className="flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      Nouveau match
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:items-center">
+                      {/* Équipe A - Gauche */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-red-600 flex items-center justify-center gap-2">
+                          <Users className="h-5 w-5" />
+                          Équipe rouge
+                        </h3>
+                        <div className="space-y-4">
+                          <SimplePlayerSelect
+                            position="teamA1"
+                            label="Joueur 1"
+                            teamColor="text-red-600"
+                            players={players}
+                            selectedPlayer={selectedPlayers.teamA1}
+                            newPlayerName={newPlayerNames.teamA1}
+                            onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamA1: value }))}
+                            onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamA1: value }))}
+                            onReset={() => {
+                              setSelectedPlayers((prev) => ({ ...prev, teamA1: "" }))
+                              setNewPlayerNames((prev) => ({ ...prev, teamA1: "" }))
+                            }}
+                          />
+                          <SimplePlayerSelect
+                            position="teamA2"
+                            label="Joueur 2"
+                            teamColor="text-red-600"
+                            players={players}
+                            selectedPlayer={selectedPlayers.teamA2}
+                            newPlayerName={newPlayerNames.teamA2}
+                            onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamA2: value }))}
+                            onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamA2: value }))}
+                            onReset={() => {
+                              setSelectedPlayers((prev) => ({ ...prev, teamA2: "" }))
+                              setNewPlayerNames((prev) => ({ ...prev, teamA2: "" }))
+                            }}
+                          />
                         </div>
-                      </TabsContent>
-                    </Tabs>
-                  </TabsContent>
+                      </div>
 
-                  <TabsContent value="duo">
-                    <Tabs defaultValue="score" className="w-full">
-                      <TabsContent value="score">
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse min-w-[600px]">
-                            <thead>
-                              <tr className="border-b-2 border-gray-200">
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Rang</th>
-                                <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Duo</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">Matchs</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">V</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">D</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">%</th>
-                                <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">ELO</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {duoStats
-                                .sort((a, b) => {
-                                  const keyA = a.players.slice().sort().join(" & ")
-                                  const keyB = b.players.slice().sort().join(" & ")
-                                  const eloA = duoEloRatings[keyA] ?? 1000
-                                  const eloB = duoEloRatings[keyB] ?? 1000
+                      {/* Score - Centre */}
+                      <div className="flex flex-col items-center space-y-4 order-last lg:order-none">
+                        <div className="text-center w-full">
+                          <h3 className="text-lg font-semibold text-gray-700 mb-4">Score</h3>
+                          <div className="flex items-center justify-center gap-2 sm:gap-4">
+                            {/* Score Équipe A */}
+                            <div className="text-center flex-1 max-w-[120px]">
+                              <Label className="text-xs sm:text-sm font-medium text-red-600 mb-2 block">Rouge</Label>
+                              <select
+                                value={scores.teamA}
+                                onChange={(e) => setScores((prev) => ({ ...prev, teamA: e.target.value }))}
+                                className="w-full h-12 sm:h-16 text-xl sm:text-2xl font-bold text-center border-2 border-red-300 rounded-lg bg-white hover:border-red-400 focus:border-red-500 focus:outline-none"
+                              >
+                                <option value="">-</option>
+                                {Array.from({ length: 11 }, (_, i) => (
+                                  <option key={i} value={i.toString()}>
+                                    {i}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
 
-                                  if (a.matches < 5 && b.matches >= 5) return 1
-                                  if (a.matches >= 5 && b.matches < 5) return -1
+                            {/* Trait d'union */}
+                            <div className="text-2xl sm:text-4xl font-bold text-gray-400 px-1 sm:px-4">-</div>
 
-                                  return eloB - eloA
-                                })
-                                .map((stat, index) => {
-                                  const key = stat.players.slice().sort().join(" & ")
-                                  const elo = duoEloRatings[key] ?? 1000
-                                  const isProvisoire = stat.matches < 5
+                            {/* Score Équipe B */}
+                            <div className="text-center flex-1 max-w-[120px]">
+                              <Label className="text-xs sm:text-sm font-medium text-blue-600 mb-2 block">Bleue</Label>
+                              <select
+                                value={scores.teamB}
+                                onChange={(e) => setScores((prev) => ({ ...prev, teamB: e.target.value }))}
+                                className="w-full h-12 sm:h-16 text-xl sm:text-2xl font-bold text-center border-2 border-blue-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none"
+                              >
+                                <option value="">-</option>
+                                {Array.from({ length: 11 }, (_, i) => (
+                                  <option key={i} value={i.toString()}>
+                                    {i}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
 
-                                  return (
-                                    <tr key={key} className="border-b border-gray-100 hover:bg-gray-50">
-                                      <td className="p-2 sm:p-3">
-                                        <Badge
-                                          variant={index < 3 && !isProvisoire ? "default" : "secondary"}
-                                          className="text-xs sm:text-sm"
-                                        >
-                                          #{index + 1}
-                                        </Badge>
-                                      </td>
-                                      <td className="p-2 sm:p-3 font-medium text-sm sm:text-base break-words">
-                                        <span className="block sm:inline">{stat.players[0]}</span>
-                                        <span className="hidden sm:inline"> & </span>
-                                        <span className="block sm:inline">{stat.players[1]}</span>
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-sm sm:text-base">{stat.matches}</td>
-                                      <td className="p-2 sm:p-3 text-center text-green-600 font-semibold text-sm sm:text-base">
-                                        {stat.wins}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-red-600 font-semibold text-sm sm:text-base">
-                                        {stat.losses}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center text-indigo-600 font-semibold text-sm sm:text-base">
-                                        {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
-                                      </td>
-                                      <td className="p-2 sm:p-3 text-center font-bold text-yellow-600 text-sm sm:text-base">
-                                        {isProvisoire ? (
-                                          <span className="text-gray-400 italic text-xs">Min 5</span>
-                                        ) : (
-                                          Math.round(elo)
-                                        )}
-                                      </td>
-                                    </tr>
-                                  )
-                                })}
-                            </tbody>
-                          </table>
+                          {/* Affichage du score sélectionné */}
+                          {(scores.teamA || scores.teamB) && (
+                            <div className="mt-4">
+                              <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-2">
+                                {scores.teamA || "0"} - {scores.teamB || "0"}
+                              </Badge>
+                            </div>
+                          )}
                         </div>
-                      </TabsContent>
-                    </Tabs>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                      </div>
 
-          {/* 🆕 Onglet Administration 
-          <TabsContent value="admin">
-            <div className="space-y-6">
-              {/* Gestion des joueurs *
+                      {/* Équipe B - Droite */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-blue-600 flex items-center justify-center gap-2">
+                          <Users className="h-5 w-5" />
+                          Équipe bleue
+                        </h3>
+                        <div className="space-y-4">
+                          <SimplePlayerSelect
+                            position="teamB1"
+                            label="Joueur 1"
+                            teamColor="text-blue-600"
+                            players={players}
+                            selectedPlayer={selectedPlayers.teamB1}
+                            newPlayerName={newPlayerNames.teamB1}
+                            onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamB1: value }))}
+                            onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamB1: value }))}
+                            onReset={() => {
+                              setSelectedPlayers((prev) => ({ ...prev, teamB1: "" }))
+                              setNewPlayerNames((prev) => ({ ...prev, teamB1: "" }))
+                            }}
+                          />
+                          <SimplePlayerSelect
+                            position="teamB2"
+                            label="Joueur 2"
+                            teamColor="text-blue-600"
+                            players={players}
+                            selectedPlayer={selectedPlayers.teamB2}
+                            newPlayerName={newPlayerNames.teamB2}
+                            onPlayerSelect={(value) => setSelectedPlayers((prev) => ({ ...prev, teamB2: value }))}
+                            onNewPlayerNameChange={(value) => setNewPlayerNames((prev) => ({ ...prev, teamB2: value }))}
+                            onReset={() => {
+                              setSelectedPlayers((prev) => ({ ...prev, teamB2: "" }))
+                              setNewPlayerNames((prev) => ({ ...prev, teamB2: "" }))
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 text-center">
+                      <Button
+                        onClick={validateMatch}
+                        disabled={submitting}
+                        size="lg"
+                        className="bg-gradient-to-r from-red-500 to-blue-500 hover:from-red-600 hover:to-blue-600 text-white px-8 py-3"
+                      >
+                        {submitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Enregistrement...
+                          </>
+                        ) : (
+                          "Valider le match"
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Gestion des matchs */}
+                <Card className="shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      Historique des matchs ({matches.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 sm:p-6">
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse min-w-[600px]">
+                        <thead>
+                          <tr className="border-b-2 border-gray-200">
+                            <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe rouge</th>
+                            <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[80px]">
+                              Score
+                            </th>
+                            <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe bleue</th>
+                            <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[100px]">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...matches]
+                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                            .slice(0, 20)
+                            .map((match) => (
+                              <tr key={match.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                <td className="p-2 sm:p-3">
+                                  <div className="text-xs sm:text-sm">
+                                    <div className="font-medium text-red-600 break-words">
+                                      <span className="block sm:inline">{match.team_a_player_1}</span>
+                                      <span className="hidden sm:inline"> & </span>
+                                      <span className="block sm:inline">{match.team_a_player_2}</span>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="p-2 sm:p-3 text-center">
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Badge
+                                      variant={match.score_a > match.score_b ? "default" : "secondary"}
+                                      className="text-xs sm:text-sm px-1 sm:px-2"
+                                    >
+                                      {match.score_a}
+                                    </Badge>
+                                    <span className="text-xs sm:text-sm">-</span>
+                                    <Badge
+                                      variant={match.score_b > match.score_a ? "default" : "secondary"}
+                                      className="text-xs sm:text-sm px-1 sm:px-2"
+                                    >
+                                      {match.score_b}
+                                    </Badge>
+                                  </div>
+                                </td>
+                                <td className="p-2 sm:p-3">
+                                  <div className="text-xs sm:text-sm">
+                                    <div className="font-medium text-blue-600 break-words">
+                                      <span className="block sm:inline">{match.team_b_player_1}</span>
+                                      <span className="hidden sm:inline"> & </span>
+                                      <span className="block sm:inline">{match.team_b_player_2}</span>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="p-2 sm:p-3 text-center">
+                                  <div className="flex items-center justify-center gap-1 sm:gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setEditMatchModal({ isOpen: true, match })}
+                                      className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    >
+                                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setDeleteMatchModal({ isOpen: true, match })}
+                                      className="text-red-600 hover:text-red-700 h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    >
+                                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {matches.length > 20 && (
+                      <p className="text-center text-gray-500 mt-4 text-sm">
+                        Affichage des 20 matchs les plus récents sur {matches.length} au total
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+                <div className="mb-6 text-center">
+                  <p className="text-sm text-gray-700">🎯 Victoires par couleur (sur {colorWinStats.total} matchs) :</p>
+                  <p className="text-md font-semibold">
+                    🔴 Rouge : {((colorWinStats.redWins / colorWinStats.total) * 100).toFixed(1)}% &nbsp;&nbsp;&nbsp; 🔵
+                    Bleu : {((colorWinStats.blueWins / colorWinStats.total) * 100).toFixed(1)}%
+                  </p>
+                  <p className="mt-2 text-sm text-gray-700">
+                    ⚽ Nombre total de buts marqués : <span className="font-semibold">{totalGoals}</span>
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Onglet Classements */}
+            <TabsContent value="rankings">
               <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-t-lg">
+                <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
                   <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Gestion des joueurs ({players.length})
+                    <TrendingUp className="h-5 w-5" />
+                    Classements
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="border-b-2 border-gray-200">
-                          <th className="text-left p-3 font-semibold">Nom</th>
-                          <th className="text-center p-3 font-semibold">Date de création</th>
-                          <th className="text-center p-3 font-semibold">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {players.map((player) => (
-                          <tr key={player.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="p-3 font-medium">{player.name}</td>
-                            <td className="p-3 text-center text-gray-600">
-                              {new Date(player.created_at).toLocaleDateString("fr-FR")}
-                            </td>
-                            <td className="p-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setEditPlayerModal({ isOpen: true, player })}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setDeletePlayerModal({ isOpen: true, player })}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <Tabs defaultValue="individual" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-6">
+                      <TabsTrigger value="individual" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Classement individuel
+                      </TabsTrigger>
+                      <TabsTrigger value="duo" className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Classement par duo
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="individual">
+                      <Tabs defaultValue="score" className="w-full">
+                        <TabsContent value="score">
+                          <div className="overflow-x-auto">
+                            <table className="w-full border-collapse min-w-[500px]">
+                              <thead>
+                                <tr className="border-b-2 border-gray-200">
+                                  <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Rang</th>
+                                  <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Joueur</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">Matchs</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">V</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">D</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">%</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">ELO</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {individualStats
+                                  .sort((a, b) => {
+                                    const eloA = eloRatings[a.name] ?? 1000
+                                    const eloB = eloRatings[b.name] ?? 1000
+
+                                    if (a.matches < 10 && b.matches >= 10) return 1
+                                    if (a.matches >= 10 && b.matches < 10) return -1
+
+                                    return eloB - eloA
+                                  })
+                                  .map((stat, index) => {
+                                    const elo = eloRatings[stat.name]
+                                    const isProvisoire = stat.matches < 10
+
+                                    return (
+                                      <tr key={stat.name} className="border-b border-gray-100 hover:bg-gray-50">
+                                        <td className="p-2 sm:p-3">
+                                          <Badge
+                                            variant={index < 3 ? "default" : "secondary"}
+                                            className="text-xs sm:text-sm"
+                                          >
+                                            #{index + 1}
+                                          </Badge>
+                                        </td>
+                                        <td className="p-2 sm:p-3 font-medium text-sm sm:text-base break-words">
+                                          {stat.name}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center text-sm sm:text-base">{stat.matches}</td>
+                                        <td className="p-2 sm:p-3 text-center text-green-600 font-semibold text-sm sm:text-base">
+                                          {stat.wins}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center text-red-600 font-semibold text-sm sm:text-base">
+                                          {stat.losses}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center text-indigo-600 font-semibold text-sm sm:text-base">
+                                          {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center font-bold text-yellow-600 text-sm sm:text-base">
+                                          {isProvisoire ? (
+                                            <span className="text-gray-400 italic text-xs">Min 10</span>
+                                          ) : (
+                                            Math.round(elo ?? 1000)
+                                          )}
+                                        </td>
+                                      </tr>
+                                    )
+                                  })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                    </TabsContent>
+
+                    <TabsContent value="duo">
+                      <Tabs defaultValue="score" className="w-full">
+                        <TabsContent value="score">
+                          <div className="overflow-x-auto">
+                            <table className="w-full border-collapse min-w-[600px]">
+                              <thead>
+                                <tr className="border-b-2 border-gray-200">
+                                  <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Rang</th>
+                                  <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Duo</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">Matchs</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">V</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">D</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">%</th>
+                                  <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base">ELO</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {duoStats
+                                  .sort((a, b) => {
+                                    const keyA = a.players.slice().sort().join(" & ")
+                                    const keyB = b.players.slice().sort().join(" & ")
+                                    const eloA = duoEloRatings[keyA] ?? 1000
+                                    const eloB = duoEloRatings[keyB] ?? 1000
+
+                                    if (a.matches < 5 && b.matches >= 5) return 1
+                                    if (a.matches >= 5 && b.matches < 5) return -1
+
+                                    return eloB - eloA
+                                  })
+                                  .map((stat, index) => {
+                                    const key = stat.players.slice().sort().join(" & ")
+                                    const elo = duoEloRatings[key] ?? 1000
+                                    const isProvisoire = stat.matches < 5
+
+                                    return (
+                                      <tr key={key} className="border-b border-gray-100 hover:bg-gray-50">
+                                        <td className="p-2 sm:p-3">
+                                          <Badge
+                                            variant={index < 3 && !isProvisoire ? "default" : "secondary"}
+                                            className="text-xs sm:text-sm"
+                                          >
+                                            #{index + 1}
+                                          </Badge>
+                                        </td>
+                                        <td className="p-2 sm:p-3 font-medium text-sm sm:text-base break-words">
+                                          <span className="block sm:inline">{stat.players[0]}</span>
+                                          <span className="hidden sm:inline"> & </span>
+                                          <span className="block sm:inline">{stat.players[1]}</span>
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center text-sm sm:text-base">{stat.matches}</td>
+                                        <td className="p-2 sm:p-3 text-center text-green-600 font-semibold text-sm sm:text-base">
+                                          {stat.wins}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center text-red-600 font-semibold text-sm sm:text-base">
+                                          {stat.losses}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center text-indigo-600 font-semibold text-sm sm:text-base">
+                                          {stat.matches > 0 ? ((stat.wins / stat.matches) * 100).toFixed(1) + "%" : "-"}
+                                        </td>
+                                        <td className="p-2 sm:p-3 text-center font-bold text-yellow-600 text-sm sm:text-base">
+                                          {isProvisoire ? (
+                                            <span className="text-gray-400 italic text-xs">Min 5</span>
+                                          ) : (
+                                            Math.round(elo)
+                                          )}
+                                        </td>
+                                      </tr>
+                                    )
+                                  })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                    </TabsContent>
+                  </Tabs>
                 </CardContent>
               </Card>
+            </TabsContent>
+          </Tabs>
 
-            </div>
-          </TabsContent>*/}
-        </Tabs>
+          {/* Modals d'administration */}
+          <DeletePlayerModal
+            player={deletePlayerModal.player}
+            isOpen={deletePlayerModal.isOpen}
+            onClose={() => setDeletePlayerModal({ isOpen: false, player: null })}
+            onConfirm={handleDeletePlayer}
+          />
 
-        {/* Modals d'administration */}
-        <DeletePlayerModal
-          player={deletePlayerModal.player}
-          isOpen={deletePlayerModal.isOpen}
-          onClose={() => setDeletePlayerModal({ isOpen: false, player: null })}
-          onConfirm={handleDeletePlayer}
-        />
+          <EditPlayerModal
+            player={editPlayerModal.player}
+            isOpen={editPlayerModal.isOpen}
+            onClose={() => setEditPlayerModal({ isOpen: false, player: null })}
+            onConfirm={handleEditPlayer}
+          />
 
-        <EditPlayerModal
-          player={editPlayerModal.player}
-          isOpen={editPlayerModal.isOpen}
-          onClose={() => setEditPlayerModal({ isOpen: false, player: null })}
-          onConfirm={handleEditPlayer}
-        />
+          <EditMatchModal
+            match={editMatchModal.match}
+            players={players}
+            isOpen={editMatchModal.isOpen}
+            onClose={() => setEditMatchModal({ isOpen: false, match: null })}
+            onConfirm={handleEditMatch}
+          />
 
-        <EditMatchModal
-          match={editMatchModal.match}
-          players={players}
-          isOpen={editMatchModal.isOpen}
-          onClose={() => setEditMatchModal({ isOpen: false, match: null })}
-          onConfirm={handleEditMatch}
-        />
+          <DeleteMatchModal
+            match={deleteMatchModal.match}
+            isOpen={deleteMatchModal.isOpen}
+            onClose={() => setDeleteMatchModal({ isOpen: false, match: null })}
+            onConfirm={handleDeleteMatch}
+          />
 
-        <DeleteMatchModal
-          match={deleteMatchModal.match}
-          isOpen={deleteMatchModal.isOpen}
-          onClose={() => setDeleteMatchModal({ isOpen: false, match: null })}
-          onConfirm={handleDeleteMatch}
-        />
-
-        {/* Toaster pour les notifications */}
-        <Toaster />
+          {/* Toaster pour les notifications */}
+          <Toaster />
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   )
 }

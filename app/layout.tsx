@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
+import { AuthProvider } from "@/contexts/auth-context"
 
 export const metadata: Metadata = {
   title: "MyLegiFoot Tracker",
@@ -47,7 +48,9 @@ export default function RootLayout({
         <link rel="icon" href="/app-icon.png" />
         <link rel="shortcut icon" href="/app-icon.png" />
       </head>
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   )
 }
