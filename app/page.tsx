@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Users, User, TrendingUp, Target, Loader2, Edit, Trash2, Calendar } from "lucide-react"
+import { Trophy, Users, User, TrendingUp, Target, Loader2, Calendar } from "lucide-react"
 import {
   getPlayers,
   getMatches,
@@ -624,7 +624,7 @@ export default function BabyfootApp() {
                 </CardHeader>
                 <CardContent className="p-3 sm:p-6">
                   <div className="overflow-x-auto">
-                    <table className="w-full border-collapse min-w-[600px]">
+                    <table className="w-full border-collapse min-w-[500px]">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
                           <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe rouge</th>
@@ -632,9 +632,6 @@ export default function BabyfootApp() {
                             Score
                           </th>
                           <th className="text-left p-2 sm:p-3 font-semibold text-sm sm:text-base">Équipe bleue</th>
-                          <th className="text-center p-2 sm:p-3 font-semibold text-sm sm:text-base min-w-[100px]">
-                            Actions
-                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -676,26 +673,6 @@ export default function BabyfootApp() {
                                     <span className="hidden sm:inline"> & </span>
                                     <span className="block sm:inline">{match.team_b_player_2}</span>
                                   </div>
-                                </div>
-                              </td>
-                              <td className="p-2 sm:p-3 text-center">
-                                <div className="flex items-center justify-center gap-1 sm:gap-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setEditMatchModal({ isOpen: true, match })}
-                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0"
-                                  >
-                                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setDeleteMatchModal({ isOpen: true, match })}
-                                    className="text-red-600 hover:text-red-700 h-7 w-7 sm:h-8 sm:w-8 p-0"
-                                  >
-                                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                                  </Button>
                                 </div>
                               </td>
                             </tr>
