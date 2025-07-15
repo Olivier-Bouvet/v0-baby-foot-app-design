@@ -400,7 +400,7 @@ export default function BabyfootApp() {
         </div>
 
         {/* Statistiques globales */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <Card className="shadow-lg">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -418,16 +418,6 @@ export default function BabyfootApp() {
                 <h3 className="font-semibold text-gray-700">Total buts</h3>
               </div>
               <p className="text-2xl font-bold text-green-600">{totalGoals}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Users className="h-5 w-5 text-purple-500" />
-                <h3 className="font-semibold text-gray-700">Joueurs actifs</h3>
-              </div>
-              <p className="text-2xl font-bold text-purple-600">{players.length}</p>
             </CardContent>
           </Card>
 
