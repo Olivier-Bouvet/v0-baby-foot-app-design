@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Eye, EyeOff, Mail, Lock, User } from "lucide-react"
 import { signUp } from "@/lib/auth"
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 export function SignUpForm() {
   const [fullName, setFullName] = useState("")
@@ -23,8 +23,6 @@ export function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
-
   const router = useRouter()
   const { toast } = useToast()
 
@@ -34,6 +32,12 @@ export function SignUpForm() {
     setError("")
 
     // Validation
+    if (!fullName || !email || !password || !confirmPassword) {
+      setError("Veuillez remplir tous les champs")
+      setLoading(false)
+      return
+    }
+
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas")
       setLoading(false)
@@ -50,62 +54,37 @@ export function SignUpForm() {
       const { data, error } = await signUp(email, password, fullName)
 
       if (error) {
-        setError(error.message)
-        toast({
-          title: "Erreur d'inscription",
-          description: error.message,
-          variant: "destructive",
-        })
-      } else {
-        setSuccess(true)
-        toast({
-          title: "Inscription réussie",
-          description: "Vérifiez votre email pour confirmer votre compte",
-        })
+        if (error.message.includes("User already registered")) {
+          setError("Un compte existe déjà avec cette adresse email")
+        } else if (error.message.includes("Password should be at least")) {
+          setError("Le mot de passe doit contenir au moins 6 caractères")
+        } else {
+          setError(error.message)
+        }
+        return
+      }
 
-        // Redirect to sign-in after a delay
-        setTimeout(() => {
-          router.push("/auth/sign-in")
-        }, 3000)
+      if (data.user) {
+        toast({
+          title: "Compte créé avec succès",
+          description: "Vérifiez votre email pour confirmer votre compte",
+          duration: 5000,
+        })
+        router.push("/auth/sign-in")
       }
     } catch (err) {
-      setError("Une erreur inattendue s'est produite")
-      toast({
-        title: "Erreur",
-        description: "Une erreur inattendue s'est produite",
-        variant: "destructive",
-      })
+      console.error("Erreur de création de compte:", err)
+      setError("Une erreur est survenue lors de la création du compte")
     } finally {
       setLoading(false)
     }
   }
 
-  if (success) {
-    return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-green-600">Inscription réussie !</CardTitle>
-          <CardDescription className="text-center">
-            Un email de confirmation a été envoyé à votre adresse. Vérifiez votre boîte de réception et cliquez sur le
-            lien pour activer votre compte.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <div className="text-center text-sm w-full">
-            <Link href="/auth/sign-in" className="text-primary hover:underline">
-              Retour à la connexion
-            </Link>
-          </div>
-        </CardFooter>
-      </Card>
-    )
-  }
-
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Inscription</CardTitle>
-        <CardDescription className="text-center">Créez votre compte MyLegiFoot</CardDescription>
+        <CardTitle className="text-2xl font-bold text-center">Créer un compte</CardTitle>
+        <CardDescription className="text-center">Rejoignez MyLegiFoot pour suivre vos performances</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -118,7 +97,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <Label htmlFor="fullName">Nom complet</Label>
             <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="fullName"
                 type="text"
@@ -126,8 +105,8 @@ export function SignUpForm() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="pl-10"
-                required
                 disabled={loading}
+                required
               />
             </div>
           </div>
@@ -135,7 +114,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="email"
                 type="email"
@@ -143,8 +122,8 @@ export function SignUpForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
-                required
                 disabled={loading}
+                required
               />
             </div>
           </div>
@@ -152,7 +131,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <Label htmlFor="password">Mot de passe</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -160,8 +139,9 @@ export function SignUpForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
-                required
                 disabled={loading}
+                required
+                minLength={6}
               />
               <Button
                 type="button"
@@ -172,9 +152,9 @@ export function SignUpForm() {
                 disabled={loading}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="h-4 w-4 text-gray-400" />
                 )}
               </Button>
             </div>
@@ -183,7 +163,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
@@ -191,8 +171,9 @@ export function SignUpForm() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="pl-10 pr-10"
-                required
                 disabled={loading}
+                required
+                minLength={6}
               />
               <Button
                 type="button"
@@ -203,33 +184,31 @@ export function SignUpForm() {
                 disabled={loading}
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="h-4 w-4 text-gray-400" />
                 )}
               </Button>
             </div>
           </div>
         </CardContent>
-
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Inscription...
+                Création...
               </>
             ) : (
-              "Créer un compte"
+              "Créer mon compte"
             )}
           </Button>
-
-          <div className="text-center text-sm">
-            <span className="text-muted-foreground">Déjà un compte ? </span>
-            <Link href="/auth/sign-in" className="text-primary hover:underline">
+          <p className="text-center text-sm text-gray-600">
+            Déjà un compte ?{" "}
+            <Link href="/auth/sign-in" className="text-blue-600 hover:text-blue-500 font-medium">
               Se connecter
             </Link>
-          </div>
+          </p>
         </CardFooter>
       </form>
     </Card>

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,14 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, LogOut, Settings } from "lucide-react"
+import { LogOut, User, Settings } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 
 export function UserMenu() {
   const { user, signOut } = useAuth()
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const { toast } = useToast()
 
   const handleSignOut = async () => {
@@ -28,59 +26,55 @@ export function UserMenu() {
       await signOut()
       toast({
         title: "Déconnexion réussie",
-        description: "Vous avez été déconnecté avec succès",
+        description: "À bientôt !",
+        duration: 3000,
       })
-      router.push("/auth/sign-in")
     } catch (error) {
+      console.error("Erreur de déconnexion:", error)
       toast({
         title: "Erreur",
         description: "Erreur lors de la déconnexion",
         variant: "destructive",
+        duration: 3000,
       })
     } finally {
       setLoading(false)
     }
   }
 
-  if (!user) {
-    return (
-      <Button asChild variant="outline">
-        <a href="/auth/sign-in">Se connecter</a>
-      </Button>
-    )
-  }
+  if (!user) return null
 
-  const displayName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Utilisateur"
-  const initials = displayName
-    .split(" ")
-    .map((name) => name[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
+  const userInitials = user.user_metadata?.full_name
+    ? user.user_metadata.full_name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+    : user.email?.charAt(0).toUpperCase() || "U"
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user.user_metadata?.avatar_url || "/placeholder.svg"} alt={displayName} />
-            <AvatarFallback>{initials}</AvatarFallback>
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={user.user_metadata?.avatar_url || "/placeholder.svg"} alt="Avatar" />
+            <AvatarFallback className="bg-blue-500 text-white">{userInitials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{displayName}</p>
+            <p className="text-sm font-medium leading-none">{user.user_metadata?.full_name || "Utilisateur"}</p>
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem disabled>
           <User className="mr-2 h-4 w-4" />
           <span>Profil</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem disabled>
           <Settings className="mr-2 h-4 w-4" />
           <span>Paramètres</span>
         </DropdownMenuItem>

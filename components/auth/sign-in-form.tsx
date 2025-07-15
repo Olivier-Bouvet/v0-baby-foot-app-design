@@ -2,9 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,48 +13,63 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { signIn, getRememberedEmail } from "@/lib/auth"
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 export function SignInForm() {
-  const [email, setEmail] = useState(getRememberedEmail() || "")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(!!getRememberedEmail())
+  const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-
   const router = useRouter()
   const { toast } = useToast()
+
+  // Load remembered email on component mount
+  useEffect(() => {
+    const rememberedEmail = getRememberedEmail()
+    if (rememberedEmail) {
+      setEmail(rememberedEmail)
+      setRememberMe(true)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
+    if (!email || !password) {
+      setError("Veuillez remplir tous les champs")
+      setLoading(false)
+      return
+    }
+
     try {
       const { data, error } = await signIn(email, password, rememberMe)
 
       if (error) {
-        setError(error.message)
-        toast({
-          title: "Erreur de connexion",
-          description: error.message,
-          variant: "destructive",
-        })
-      } else if (data.user) {
+        if (error.message.includes("Invalid login credentials")) {
+          setError("Email ou mot de passe incorrect")
+        } else if (error.message.includes("Email not confirmed")) {
+          setError("Veuillez confirmer votre email avant de vous connecter")
+        } else {
+          setError(error.message)
+        }
+        return
+      }
+
+      if (data.user) {
         toast({
           title: "Connexion réussie",
           description: "Vous êtes maintenant connecté !",
+          duration: 3000,
         })
         router.push("/")
-        router.refresh()
       }
     } catch (err) {
-      setError("Une erreur inattendue s'est produite")
-      toast({
-        title: "Erreur",
-        description: "Une erreur inattendue s'est produite",
-        variant: "destructive",
-      })
+      console.error("Erreur de connexion:", err)
+      setError("Une erreur est survenue lors de la connexion")
     } finally {
       setLoading(false)
     }
@@ -78,7 +92,7 @@ export function SignInForm() {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="email"
                 type="email"
@@ -86,8 +100,8 @@ export function SignInForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
-                required
                 disabled={loading}
+                required
               />
             </div>
           </div>
@@ -95,7 +109,7 @@ export function SignInForm() {
           <div className="space-y-2">
             <Label htmlFor="password">Mot de passe</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -103,8 +117,8 @@ export function SignInForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
-                required
                 disabled={loading}
+                required
               />
               <Button
                 type="button"
@@ -115,9 +129,9 @@ export function SignInForm() {
                 disabled={loading}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="h-4 w-4 text-gray-400" />
                 )}
               </Button>
             </div>
@@ -135,13 +149,11 @@ export function SignInForm() {
                 Se souvenir de moi
               </Label>
             </div>
-
-            <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline">
+            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
               Mot de passe oublié ?
             </Link>
           </div>
         </CardContent>
-
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
@@ -153,13 +165,12 @@ export function SignInForm() {
               "Se connecter"
             )}
           </Button>
-
-          <div className="text-center text-sm">
-            <span className="text-muted-foreground">Pas encore de compte ? </span>
-            <Link href="/auth/sign-up" className="text-primary hover:underline">
+          <p className="text-center text-sm text-gray-600">
+            Pas encore de compte ?{" "}
+            <Link href="/auth/sign-up" className="text-blue-600 hover:text-blue-500 font-medium">
               Créer un compte
             </Link>
-          </div>
+          </p>
         </CardFooter>
       </form>
     </Card>

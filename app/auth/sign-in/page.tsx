@@ -11,7 +11,7 @@ export default function SignInPage() {
             <Trophy className="h-8 w-8 text-yellow-500" />
             <h1 className="text-3xl font-bold text-gray-900">MyLegiFoot</h1>
           </div>
-          <p className="text-gray-600">Connectez-vous pour accéder à votre tracker</p>
+          <p className="text-gray-600">Tracker de baby-foot</p>
         </div>
 
         {/* Sign In Form */}

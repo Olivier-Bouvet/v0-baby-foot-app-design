@@ -11,7 +11,7 @@ export default function SignUpPage() {
             <Trophy className="h-8 w-8 text-yellow-500" />
             <h1 className="text-3xl font-bold text-gray-900">MyLegiFoot</h1>
           </div>
-          <p className="text-gray-600">Créez votre compte pour commencer</p>
+          <p className="text-gray-600">Tracker de baby-foot</p>
         </div>
 
         {/* Sign Up Form */}
