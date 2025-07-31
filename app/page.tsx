@@ -416,7 +416,7 @@ export default function BabyfootApp() {
             </TabsTrigger>*/}
 <TabsTrigger value="mylegicup" disabled className="cursor-not-allowed opacity-50">
   <Trophy className="h-4 w-4 mr-2" />
-  MyLegiCup (
+  MyLegiCup (Septembre 2025)
 </TabsTrigger>
           </TabsList>
 
