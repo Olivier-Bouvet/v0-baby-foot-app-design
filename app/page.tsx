@@ -401,7 +401,7 @@ export default function BabyfootApp() {
 
         {/* Navigation principale */}
         <Tabs defaultValue="match" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+        <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="match" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
               Matchs
@@ -414,6 +414,10 @@ export default function BabyfootApp() {
               <Settings className="h-4 w-4" />
               Administration
             </TabsTrigger>*/}
+<TabsTrigger value="mylegicup" disabled className="cursor-not-allowed opacity-50">
+  <Trophy className="h-4 w-4 mr-2" />
+  MyLegiCup (
+</TabsTrigger>
           </TabsList>
 
           {/* Onglet Nouveau match */}
